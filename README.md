@@ -65,6 +65,7 @@ Buka `yanndain-preview.html` atau `yanndain-ocean-v4.html` yang dihasilkan di ro
 ```sh
 npm run build:preview
 npm run test:e2e
+node --experimental-strip-types --test tests/tornado.test.ts
 ```
 
 Suite menggunakan Chromium di `/usr/bin/chromium`, atau lokasi executable dari variabel `CHROMIUM_PATH`. Pengujian mencakup navigasi, bahasa, mobile, formasi, gerakan ikan tanpa scroll, WebGL fallback, dan HTML portable. Software rendering bukan ukuran performa GPU pengguna.

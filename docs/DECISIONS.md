@@ -4,7 +4,7 @@
 
 The Home introduction is titled “A little about me”. Its bilingual description explains the transition from red team labs on HTB and THM toward building and maintaining secure systems. The translucent ocean button “Kenali lebih dekat” / “More about me” opens the full About page.
 
-420 of the existing sardines form a tapered, rising tornado on the left. They circulate up the cone and return along the outside on continuous paths, even without scrolling. Scroll blends the formation in and out; reverse scrolling restores it. Mobile reserves space above the copy for the formation. Reduced motion keeps the scene static. The total remains 900 animals.
+420 of the existing sardines form a tapered, rising tornado on the left. Five spiral streams all move upward, distributed by cone surface area so the narrow base does not accumulate fish. Fish fade at the top and reappear at the bottom while hidden; no visible downward return path is used. Background schools move deeper behind the cone to keep its flow readable. Scroll blends the formation in and out; reverse scrolling restores it. Mobile reserves space above the copy for the formation. Reduced motion keeps the scene static. The total remains 900 animals.
 
 The portfolio serves job seeking and learning documentation. Identity is Yanndain plus a real-name placeholder. Supporting content is available in Indonesian and English. All headings remain English in both modes, including card titles, page titles and article subheadings. Wording is short and calm.
 

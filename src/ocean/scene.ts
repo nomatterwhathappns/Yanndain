@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { makeFishGeometry, makeMantaGeometry, type FishSpecies } from './fish-models';
 import { sampleSwimPosition } from './swimming';
-import { sampleTornado } from './tornado';
+import { sampleTornado, TORNADO_COUNT, tornadoTravel, tornadoVisibility } from './tornado';
 
 export const FISH_COUNTS = Object.freeze({ sardine: 700, jack: 120, reef: 50, lantern: 24, manta: 2, large: 4 });
 export const FISH_TOTAL = Object.values(FISH_COUNTS).reduce((sum, value) => sum + value, 0);
@@ -21,7 +21,7 @@ export interface OceanControls {
 type Fish = {
   species: FishSpecies; index: number; school: number; seed: number; scale: number;
   offset: THREE.Vector3; position: THREE.Vector3; heading: THREE.Quaternion;
-  velocity: THREE.Vector3; initialized: boolean;
+  velocity: THREE.Vector3; initialized: boolean; tornadoLap?: number;
 };
 type Population = { species: FishSpecies; mesh: THREE.InstancedMesh; fish: Fish[] };
 const TAU = Math.PI * 2;
@@ -154,6 +154,12 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     }));
     material.onBeforeCompile = shader => {
       shader.uniforms.uSwimTime = clockUniform;
+      shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nattribute float aVisibility; varying float vVisibility;');
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvVisibility = aVisibility;');
+      shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vVisibility;');
+      shader.fragmentShader = shader.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+        float fadeNoise = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+        if (vVisibility <= 0.0 || (vVisibility < 1.0 && fadeNoise > vVisibility)) discard;`);
       shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\nuniform float uSwimTime;\nattribute float aPhase;');
       if (species === 'manta') {
         shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
@@ -192,6 +198,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     const phases = new Float32Array(count);
     for (let i = 0; i < count; i++) phases[i] = random() * TAU;
     geometry.setAttribute('aPhase', new THREE.InstancedBufferAttribute(phases, 1));
+    geometry.setAttribute('aVisibility', new THREE.InstancedBufferAttribute(new Float32Array(count).fill(1), 1).setUsage(THREE.DynamicDrawUsage));
     const mesh = new THREE.InstancedMesh(geometry, fishMaterial(species), count);
     mesh.name = `${species}-${count}`;
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -254,7 +261,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   const cameraOffset = new THREE.Vector3();
   function samplePosition(fish: Fish, atTime: number, output: THREE.Vector3) {
     sampleSwimPosition(fish, atTime, { narrow, depth: smooth.depth }, output);
-    if (smooth.tornado > .001 && fish.species === 'sardine' && fish.index < 420) {
+    if (smooth.tornado > .001 && fish.species === 'sardine' && fish.index < TORNADO_COUNT) {
       const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 18;
       sampleTornado(fish.index, fish.seed, atTime, halfHeight, camera.aspect, narrow, smooth.tornadoY, target);
       target.applyQuaternion(camera.quaternion).add(camera.position);
@@ -264,7 +271,10 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
       const dx = narrow ? cameraOffset.x : (cameraOffset.x - .5) / .6;
       const dy = (cameraOffset.y - smooth.tornadoY + (narrow ? .8 : 0)) / .5;
       const pocket = Math.exp(-Math.pow(dx, 4) - Math.pow(dy, 4));
-      output.sub(camera.position).multiplyScalar(1 + pocket * smooth.tornado * 1.2).add(camera.position);
+      const columnX = (cameraOffset.x + (narrow ? 0 : .48)) / (narrow ? .8 : .42);
+      const columnY = (cameraOffset.y - smooth.tornadoY) / .85;
+      const column = Math.exp(-Math.pow(columnX, 4) - Math.pow(columnY, 4));
+      output.sub(camera.position).multiplyScalar(1 + smooth.tornado * Math.max(pocket * 1.2, column * 2)).add(camera.position);
     }
     if (fish.species === 'manta' && smooth.corridor > .001) {
       const distance = 18 + smooth.corridorPhase * 18 + (1 - Math.cos(atTime * .2 + fish.index)) * 8;
@@ -332,9 +342,16 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     for (const population of populations) {
       for (let i = 0; i < population.fish.length; i++) {
         const fish = population.fish[i];
+        const inTornado = fish.species === 'sardine' && fish.index < TORNADO_COUNT;
+        const lap = Math.floor(tornadoTravel(fish.index, time));
+        const recycled = inTornado && smooth.tornado > .5 && fish.tornadoLap !== undefined && fish.tornadoLap !== lap;
+        fish.tornadoLap = lap;
+        const visibility = inTornado ? 1 - smooth.tornado * (1 - tornadoVisibility(fish.index, time)) : 1;
+        population.mesh.geometry.getAttribute('aVisibility').setX(i, visibility);
         samplePosition(fish, time, free);
-        samplePosition(fish, time + .04, ahead);
-        direction.copy(ahead).sub(free).normalize();
+        const crossesTop = inTornado && smooth.tornado > .5 && Math.floor(tornadoTravel(fish.index, time + .04)) !== lap;
+        samplePosition(fish, time + (crossesTop ? -.04 : .04), ahead);
+        direction.copy(crossesTop ? free : ahead).sub(crossesTop ? ahead : free).normalize();
         if (!reduced && fish.species !== 'large') {
           cameraOffset.copy(free).project(camera);
           const dx = cameraOffset.x - smoothPointer.x;
@@ -346,7 +363,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
             free.y += dy * strength * 5;
           }
         }
-        if (!snap && fish.initialized && fish.species !== 'manta' && fish.species !== 'large') {
+        if (!snap && fish.initialized && !(inTornado && smooth.tornado > .8) && fish.species !== 'manta' && fish.species !== 'large') {
           const neighbors = grid.get(gridKey(fish.position.x, fish.position.y, fish.position.z));
           avoidance.set(0, 0, 0);
           if (neighbors) for (const neighbor of neighbors) {
@@ -363,7 +380,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
         }
         const initial = !fish.initialized;
         fish.velocity.copy(free).sub(fish.position);
-        fish.position.lerp(free, initial ? 1 : follow);
+        fish.position.lerp(free, initial || recycled ? 1 : follow);
         fish.initialized = true;
         side.crossVectors(direction, worldUp).normalize();
         up.crossVectors(side, direction).normalize();
@@ -372,7 +389,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
         const bank = fish.species === 'manta' ? (fish.index ? -.9 : 1.05) + Math.sin(time * .4 + fish.index) * .22 : Math.sin(time * .3 + fish.seed * 8) * .07;
         bankQuaternion.setFromAxisAngle(axisX, bank);
         desiredQuaternion.multiply(bankQuaternion);
-        fish.heading.slerp(desiredQuaternion, snap || initial ? 1 : Math.min(1, follow * 1.6));
+        fish.heading.slerp(desiredQuaternion, snap || initial || recycled ? 1 : Math.min(1, follow * 1.6));
         object.position.copy(fish.position);
         object.quaternion.copy(fish.heading);
         object.scale.setScalar(fish.scale * (narrow ? fish.species === 'manta' ? .82 : fish.species === 'large' ? .82 : .9 : 1));
@@ -380,6 +397,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
         population.mesh.setMatrixAt(i, object.matrix);
       }
       population.mesh.instanceMatrix.needsUpdate = true;
+      population.mesh.geometry.getAttribute('aVisibility').needsUpdate = true;
     }
   }
   function render(delta: number, snap = false) {
