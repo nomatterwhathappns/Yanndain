@@ -82,11 +82,10 @@ function home() {
     <section class="hero section" id="surface">
       <div class="hero-copy">
         <p class="identity">Yanndain <span>/</span> <span>${escape(profile.name)}</span></p>
-        ${heading(copy.heroFirst, copy.heroSecond, 'h1')}
+        <h1 lang="en"><span>${copy.heroFirst}</span><span>${copy.heroSecond}</span></h1>
         <p class="hero-description">${t(copy.heroDescription)}</p>
-        <div class="hero-actions">${sectionLink('about', t(copy.dive), 'button button-light')}${cvLink()}</div>
+        <div class="hero-actions">${sectionLink('projects', t(copy.dive), 'button button-ocean', 'down')}${cvLink()}</div>
       </div>
-      <a class="scroll-cue" href="${portable ? `${href('/')}?section=about` : '#about'}" data-section="about" aria-label="${t(copy.dive)}">${arrow('down')}</a>
     </section>
     <section class="about-preview section content-section" id="about">
       <div class="about-space" aria-hidden="true"></div>

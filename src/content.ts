@@ -6,7 +6,7 @@ export const words = (id: string, en: string): Localized => ({ id, en });
 // Add real files and verified contact details when available. A CV link remains
 // absent until a genuine PDF is configured; one language can serve as fallback.
 export const profile = {
-  name: '[Your Name]', username: 'Yanndain',
+  name: 'Ryanda Fajr Abdilah', username: 'Yanndain',
   cv: { id: null, en: null } as Record<Language, string | null>,
   email: null as string | null, github: null as string | null, linkedin: null as string | null,
 };
@@ -19,9 +19,9 @@ export const copy = {
   back: words('Kembali', 'Back'), backHome: words('Kembali ke beranda', 'Back to home'),
   viewCV: words('Lihat CV', 'View CV'),
   reduceMotion: words('Kurangi animasi', 'Reduce animation'), enableMotion: words('Aktifkan animasi', 'Enable animation'),
-  heroFirst: 'Beneath', heroSecond: 'the surface.',
-  heroDescription: words('Selalu ada lebih banyak untuk ditemukan.', 'There is always more to discover.'),
-  dive: words('Mulai menyelam', 'Take a dive'),
+  heroFirst: 'Aspiring to become a', heroSecond: 'Professional Security Engineer.',
+  heroDescription: words('Sedang mendalami security engineering melalui eksperimen dan belajar mandiri.', 'Exploring security engineering through experimentation and independent learning.'),
+  dive: words('Lihat proyek', 'View projects'),
   aboutFirst: 'A little', aboutSecond: 'about me.',
   aboutIntro: words('Sebuah ruang untuk belajar, mencoba, dan memahami lebih dalam. Perjalanan Yanndain akan tumbuh di sini.', 'A space to learn, experiment, and understand a little more. Yanndain’s story will grow here.'),
   readStory: words('Kenali perjalanan gw', 'Read my story'),

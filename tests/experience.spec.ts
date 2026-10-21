@@ -16,7 +16,7 @@ test('ocean has the agreed 900 fish, working WebGL, and no decorative labels', a
   expect(counts).toEqual({ sardine: 700, jack: 120, reef: 50, lantern: 24, manta: 2, large: 4 });
   await expect(page.locator('.site-header nav')).toHaveCount(0);
   await expect(page.locator('.depth-rail, .specimen-label, .section-kicker, .hero-coordinates')).toHaveCount(0);
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Beneath');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Professional Security Engineer.');
   await expect(page.locator('.cv-link')).toHaveCount(0);
   const headings = await page.locator('h1,h2,h3').allTextContents();
   const description = await page.locator('.hero-description').textContent();
@@ -197,7 +197,7 @@ test('standalone preview also runs inside an opaque sandboxed iframe', async ({ 
     document.body.append(frame);
   }, html);
   const frame = page.frameLocator('iframe');
-  await expect(frame.locator('h1')).toContainText('Beneath');
+  await expect(frame.locator('h1')).toContainText('Professional Security Engineer.');
   await frame.getByRole('link', { name: 'Jelajahi semua proyek' }).click();
   await expect(frame.locator('.filters')).toBeVisible();
   await frame.getByRole('button', { name: 'EN', exact: true }).click();
