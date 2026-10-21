@@ -246,6 +246,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   scene.add(particles);
 
   const object = new THREE.Object3D();
+  const fishTint = new THREE.Color();
   const target = new THREE.Vector3();
   const free = new THREE.Vector3();
   const ahead = new THREE.Vector3();
@@ -392,11 +393,16 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
         fish.heading.slerp(desiredQuaternion, snap || initial || recycled ? 1 : Math.min(1, follow * 1.6));
         object.position.copy(fish.position);
         object.quaternion.copy(fish.heading);
-        object.scale.setScalar(fish.scale * (narrow ? fish.species === 'manta' ? .82 : fish.species === 'large' ? .82 : .9 : 1));
+        object.scale.setScalar(fish.scale * 1.35 * (narrow ? fish.species === 'manta' ? .82 : fish.species === 'large' ? .82 : .9 : 1));
+        cameraOffset.copy(fish.position).applyMatrix4(camera.matrixWorldInverse);
+        const front = clamp((cameraOffset.z + 21) / 6, 0, 1);
+        const brightness = 1 + (inTornado ? smooth.tornado * (.08 + front * .28) : 0);
+        population.mesh.setColorAt(i, fishTint.setRGB(brightness, brightness, brightness));
         object.updateMatrix();
         population.mesh.setMatrixAt(i, object.matrix);
       }
       population.mesh.instanceMatrix.needsUpdate = true;
+      if (population.mesh.instanceColor) population.mesh.instanceColor.needsUpdate = true;
       population.mesh.geometry.getAttribute('aVisibility').needsUpdate = true;
     }
   }

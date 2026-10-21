@@ -1,6 +1,6 @@
 import type { Vector3 } from 'three';
 
-export const TORNADO_COUNT = 420;
+export const TORNADO_COUNT = 500;
 export function tornadoTravel(index: number, time: number) {
   return index / TORNADO_COUNT + time * .045;
 }
