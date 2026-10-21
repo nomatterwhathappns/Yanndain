@@ -34,7 +34,7 @@ test('section buttons open real pages, localized detail routes survive reload an
   await page.goto('/id');
   await page.getByRole('link', { name: 'Kenali perjalanan gw' }).click();
   await expect(page).toHaveURL(/\/id\/about$/);
-  await expect(page.locator('.about-story')).toContainText('[Your Name]');
+  await expect(page.locator('.about-story')).toContainText('Ryanda Fajr Abdilah');
   await page.getByRole('link', { name: 'Jelajahi semua proyek' }).click();
   await expect(page).toHaveURL(/\/id\/projects$/);
   await page.getByRole('button', { name: 'Detection', exact: true }).click();

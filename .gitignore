@@ -3,6 +3,8 @@ dist/
 test-results/
 playwright-report/
 artifacts/
+yanndain-preview.html
+yanndain-ocean-v*.html
 .DS_Store
 *.log
 .env

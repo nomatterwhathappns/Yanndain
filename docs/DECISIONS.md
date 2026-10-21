@@ -56,7 +56,7 @@ The user has not supplied a full name, CV, contact details, completed project do
 
 ## Delivery
 
-The workspace's localhost cannot be opened on the user's computer through a plain URL. Deliver the self-contained `yanndain-ocean-v4.html`, with static screenshots as additional review material. Keep an identical `yanndain-preview.html` for existing links. A published web deployment is a separate action.
+The workspace's localhost cannot be opened on the user's computer through a plain URL. Deliver the self-contained `yanndain-ocean-v4.html` through chat. Keep an identical `yanndain-preview.html` for existing links. Generated HTML exports stay local and are ignored by Git; GitHub contains organized source under app, content, ocean and styles folders. A published web deployment is a separate action.
 
 ## Swimming and mobile composition
 
