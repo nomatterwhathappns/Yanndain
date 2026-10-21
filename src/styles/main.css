@@ -76,6 +76,10 @@ h1 em, h2 em { color: #dbe8dd; }
 .content-section:before { content: ''; position: absolute; inset: -13vh 0; z-index: -1; pointer-events: none; background: linear-gradient(transparent,#03192385 25%,#031923c9 55%,#0319238a 80%,transparent); }
 .about-preview { min-height: 90svh; display: grid; grid-template-columns: 1fr 1fr; gap: 8%; align-items: center; padding-top: 100px; padding-bottom: 100px; }
 .about-preview:before { background: linear-gradient(transparent,#03192355 25%,#03192370 70%,transparent); }
+.about-space { align-self: stretch; min-height: 440px; }
+.about-preview .section-copy h2 { font-size: clamp(45px,4.5vw,72px); }
+.about-preview .section-copy>p { max-width: 460px; }
+.about-preview .button-ocean:hover svg { transform: translate(2px,-2px); }
 .section-copy h2, .section-heading h2 { font-size: clamp(58px, 5.7vw, 88px); }
 .section-copy>p { font-size: 14px; line-height: 1.95; color: var(--muted); margin-top: 29px; max-width: 390px; }
 .section-copy>.button, .section-copy>.text-link { margin-top: 34px; }
@@ -222,9 +226,10 @@ footer .text-link { font-size: 11px; border: 0; gap: 15px; color: #a7c1c4; }
   .button { min-height: 49px; padding: 15px 20px; gap: 25px; font-size: 11px; }
   .text-link { font-size: 12px; }
   .scroll-cue { bottom: 34px; left: calc(50% - 12px); }
-  .about-preview { display: block; min-height: 83svh; padding-top: 120px; padding-bottom: 100px; }
-  .about-space { display: none; }
-  .about-preview .section-copy { max-width: 370px; margin-left: auto; }
+  .about-preview { display: block; min-height: 100svh; padding-top: 50px; padding-bottom: 80px; }
+  .about-space { display: block; height: 42svh; min-height: 280px; }
+  .about-preview .section-copy { max-width: 440px; margin: 25px auto 0; }
+  .about-preview .section-copy h2 { font-size: clamp(38px,9.5vw,60px); }
   .section-copy h2, .section-heading h2 { font-size: clamp(52px,10.5vw,70px); }
   .section-copy>p { font-size: 13px; line-height: 1.9; margin-top: 25px; max-width: 340px; }
   .section-heading { display: block; margin-bottom: 37px; }

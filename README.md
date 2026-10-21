@@ -25,6 +25,7 @@ src/
 ├── ocean/
 │   ├── scene.ts            # Scene, kamera, cahaya, schooling dan formasi
 │   ├── fish-models.ts      # Geometri ikan, manta dan hiu
+│   ├── tornado.ts          # Jalur spiral vertikal untuk section About
 │   └── swimming.ts         # Jalur berenang dan distribusi ikan
 ├── styles/
 │   └── main.css            # Layout, komponen dan responsivitas

@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import { makeFishGeometry, makeMantaGeometry, type FishSpecies } from './fish-models';
 import { sampleSwimPosition } from './swimming';
+import { sampleTornado } from './tornado';
 
 export const FISH_COUNTS = Object.freeze({ sardine: 700, jack: 120, reef: 50, lantern: 24, manta: 2, large: 4 });
 export const FISH_TOTAL = Object.values(FISH_COUNTS).reduce((sum, value) => sum + value, 0);
 export interface OceanState {
   depth: number;
+  tornado: number; tornadoY: number;
   vortex: number; vortexPhase: number; vortexY: number;
   corridor: number; corridorPhase: number; corridorY: number;
   reading: boolean;
@@ -24,7 +26,7 @@ type Fish = {
 type Population = { species: FishSpecies; mesh: THREE.InstancedMesh; fish: Fish[] };
 const TAU = Math.PI * 2;
 const clamp = THREE.MathUtils.clamp;
-const defaultState: OceanState = { depth: 0, vortex: 0, vortexPhase: 0, vortexY: 0, corridor: 0, corridorPhase: 0, corridorY: 0, reading: false };
+const defaultState: OceanState = { depth: 0, tornado: 0, tornadoY: 0, vortex: 0, vortexPhase: 0, vortexY: 0, corridor: 0, corridorPhase: 0, corridorY: 0, reading: false };
 
 export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -252,6 +254,18 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   const cameraOffset = new THREE.Vector3();
   function samplePosition(fish: Fish, atTime: number, output: THREE.Vector3) {
     sampleSwimPosition(fish, atTime, { narrow, depth: smooth.depth }, output);
+    if (smooth.tornado > .001 && fish.species === 'sardine' && fish.index < 420) {
+      const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 18;
+      sampleTornado(fish.index, fish.seed, atTime, halfHeight, camera.aspect, narrow, smooth.tornadoY, target);
+      target.applyQuaternion(camera.quaternion).add(camera.position);
+      output.lerp(target, smooth.tornado);
+    } else if (smooth.tornado > .001) {
+      cameraOffset.copy(output).project(camera);
+      const dx = narrow ? cameraOffset.x : (cameraOffset.x - .5) / .6;
+      const dy = (cameraOffset.y - smooth.tornadoY + (narrow ? .8 : 0)) / .5;
+      const pocket = Math.exp(-Math.pow(dx, 4) - Math.pow(dy, 4));
+      output.sub(camera.position).multiplyScalar(1 + pocket * smooth.tornado * 1.2).add(camera.position);
+    }
     if (fish.species === 'manta' && smooth.corridor > .001) {
       const distance = 18 + smooth.corridorPhase * 18 + (1 - Math.cos(atTime * .2 + fish.index)) * 8;
       const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * distance;
@@ -262,7 +276,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     // Preserve a quiet reading area by moving passing fish deeper along the
     // view ray. Their screen positions stay distributed above and below the copy.
     // A smooth weight avoids the old abrupt downward shove on mobile.
-    const opening = 1 - clamp(smooth.depth / .17, 0, 1);
+    const opening = (1 - clamp(smooth.depth / .17, 0, 1)) * (1 - smooth.tornado);
     if (opening > 0) {
       cameraOffset.copy(output).project(camera);
       const dx = narrow ? (cameraOffset.x + .18) / .95 : (cameraOffset.x + .48) / .6;
@@ -326,7 +340,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
           const dx = cameraOffset.x - smoothPointer.x;
           const dy = cameraOffset.y + smoothPointer.y;
           const distance = dx * dx + dy * dy;
-          if (distance < .05 && smoothPointer.lengthSq() > .001 && smooth.vortex < .8 && smooth.corridor < .8) {
+          if (distance < .05 && smoothPointer.lengthSq() > .001 && smooth.tornado < .8 && smooth.vortex < .8 && smooth.corridor < .8) {
             const strength = (.05 - distance) * 16;
             free.x += dx * strength * 5;
             free.y += dy * strength * 5;
@@ -372,7 +386,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     if (disposed || contextLost) return;
     if (snap) { smooth = { ...state }; smoothPointer.copy(pointer); }
     const amount = 1 - Math.exp(-delta * 5);
-    if (!snap) for (const key of ['depth', 'vortex', 'vortexPhase', 'vortexY', 'corridor', 'corridorPhase', 'corridorY'] as const) smooth[key] += (state[key] - smooth[key]) * amount;
+    if (!snap) for (const key of ['depth', 'tornado', 'tornadoY', 'vortex', 'vortexPhase', 'vortexY', 'corridor', 'corridorPhase', 'corridorY'] as const) smooth[key] += (state[key] - smooth[key]) * amount;
     smooth.reading = state.reading;
     smoothPointer.lerp(pointer, amount);
     const depth = smooth.depth;

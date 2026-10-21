@@ -32,7 +32,7 @@ test('section buttons open real pages, localized detail routes survive reload an
   // Reload initializes WebGL again on the test runner's software renderer.
   test.setTimeout(60_000);
   await page.goto('/id');
-  await page.getByRole('link', { name: 'Kenali perjalanan gw' }).click();
+  await page.getByRole('link', { name: 'Kenali lebih dekat' }).click();
   await expect(page).toHaveURL(/\/id\/about$/);
   await expect(page.locator('.about-story')).toContainText('Ryanda Fajr Abdilah');
   await page.getByRole('link', { name: 'Jelajahi semua proyek' }).click();
@@ -62,6 +62,12 @@ test('vortex forms, dissolves, forms again on reverse scroll; horizon uses corri
   async function center(id: string) {
     await page.locator(`#${id}`).evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY + el.getBoundingClientRect().height / 2 - innerHeight / 2, behavior: 'instant' }));
   }
+  await center('about');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'tornado');
+  await center('projects');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'free');
+  await center('about');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'tornado');
   await center('curiosity');
   await expect(page.locator('html')).toHaveAttribute('data-formation', 'vortex');
   await expect(page.locator('#curiosity h2')).toBeInViewport();

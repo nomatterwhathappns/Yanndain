@@ -87,9 +87,9 @@ function home() {
         <div class="hero-actions">${sectionLink('projects', t(copy.dive), 'button button-ocean', 'down')}${cvLink()}</div>
       </div>
     </section>
-    <section class="about-preview section content-section" id="about">
+    <section class="about-preview section content-section" id="about" data-formation="tornado">
       <div class="about-space" aria-hidden="true"></div>
-      <div class="section-copy reveal">${heading(copy.aboutFirst, copy.aboutSecond)}<p>${t(copy.aboutIntro)}</p><div class="actions">${routeLink('/about', t(copy.readStory))}${cvLink()}</div></div>
+      <div class="section-copy reveal"><h2 lang="en">A little about me</h2><p>${t(copy.aboutIntro)}</p><div class="actions">${routeLink('/about', t(copy.readStory), 'button button-ocean')}${cvLink()}</div></div>
     </section>
     <section class="projects-preview section content-section" id="projects">
       <div class="section-heading reveal">${heading(copy.projectsFirst, copy.projectsSecond)}<p>${t(copy.projectsIntro)}</p></div>
@@ -292,9 +292,11 @@ function formation(id: string) {
   const amount = Math.min(rise * rise * (3 - 2 * rise), fall * fall * (3 - 2 * fall));
   const center = rect.top + rect.height * 0.5;
   const y = 1 - center / window.innerHeight * 2;
-  const copyElement = element.querySelector<HTMLElement>('.bridge-copy')!;
-  copyElement.style.opacity = `${reduced ? 1 : clamp(amount * 1.35)}`;
-  copyElement.style.transform = reduced ? '' : `translateY(${(1 - amount) * 18}px)`;
+  const copyElement = element.querySelector<HTMLElement>('.bridge-copy');
+  if (copyElement) {
+    copyElement.style.opacity = `${reduced ? 1 : clamp(amount * 1.35)}`;
+    copyElement.style.transform = reduced ? '' : `translateY(${(1 - amount) * 18}px)`;
+  }
   return { amount, phase, y };
 }
 function updateScene() {
@@ -303,12 +305,15 @@ function updateScene() {
   const isHome = route === '/';
   const depth = isHome ? clamp(window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)) : route.startsWith('/journal') ? 0.72 : route.startsWith('/projects') ? 0.45 : 0.22;
   const vortex = isHome ? formation('curiosity') : { amount: 0, phase: 0, y: 0 };
+  const tornado = isHome ? formation('about') : { amount: 0, phase: 0, y: 0 };
+  const tornadoSpace = isHome ? document.querySelector('.about-space')?.getBoundingClientRect() : undefined;
+  const tornadoY = tornadoSpace ? 1 - (tornadoSpace.top + tornadoSpace.height / 2) / innerHeight * 2 : 0;
   const corridor = isHome ? formation('horizon') : { amount: 0, phase: 0, y: 0 };
-  const state: OceanState = { depth, vortex: vortex.amount, vortexPhase: vortex.phase, vortexY: vortex.y, corridor: corridor.amount, corridorPhase: corridor.phase, corridorY: corridor.y, reading: !isHome };
+  const state: OceanState = { depth, tornado: tornado.amount, tornadoY, vortex: vortex.amount, vortexPhase: vortex.phase, vortexY: vortex.y, corridor: corridor.amount, corridorPhase: corridor.phase, corridorY: corridor.y, reading: !isHome };
   ocean?.setState(state);
   document.documentElement.style.setProperty('--depth', String(depth));
   document.documentElement.style.setProperty('--formation', String(Math.max(vortex.amount, corridor.amount)));
-  document.documentElement.dataset.formation = vortex.amount > 0.8 ? 'vortex' : corridor.amount > 0.8 ? 'corridor' : 'free';
+  document.documentElement.dataset.formation = tornado.amount > 0.8 ? 'tornado' : vortex.amount > 0.8 ? 'vortex' : corridor.amount > 0.8 ? 'corridor' : 'free';
 }
 function queueScroll() { if (!queued) { queued = true; requestAnimationFrame(updateScene); } }
 window.addEventListener('scroll', queueScroll, { passive: true });
