@@ -156,9 +156,8 @@ test('without WebGL, content and route navigation remain usable', async ({ page 
   });
   await page.goto('/id');
   await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
-  await page.getByRole('link', { name: 'Jelajahi semua proyek' }).click();
-  await expect(page).toHaveURL(/\/id\/projects$/);
-  await page.locator('.project-card').first().click();
+  await page.locator('.featured-project-link').first().click();
+  await expect(page).toHaveURL(/\/id\/projects\/lab-preview$/);
   await expect(page.locator('.article-body')).toBeVisible();
   await page.getByRole('button', { name: 'EN', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('A home lab.');
@@ -206,8 +205,8 @@ test('standalone preview also runs inside an opaque sandboxed iframe', async ({ 
   }, html);
   const frame = page.frameLocator('iframe');
   await expect(frame.locator('h1')).toContainText('Professional Security Engineer.');
-  await frame.getByRole('link', { name: 'Jelajahi semua proyek' }).click();
-  await expect(frame.locator('.filters')).toBeVisible();
+  await frame.locator('.featured-project-link').first().click();
+  await expect(frame.locator('.article-body')).toBeVisible();
   await frame.getByRole('button', { name: 'EN', exact: true }).click();
   await expect(frame.locator('html')).toHaveAttribute('lang', 'en');
   expect(errors).toEqual([]);
