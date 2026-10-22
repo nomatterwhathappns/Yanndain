@@ -2,6 +2,7 @@ import '@fontsource-variable/manrope';
 import '@fontsource/instrument-serif/latin-400.css';
 import '@fontsource/instrument-serif/latin-400-italic.css';
 import '../styles/main.css';
+import '../styles/featured-projects.css';
 import { article, copy, local, profile, projects, words, type Language, type Localized, type Project } from '../content';
 import type { OceanControls, OceanState } from '../ocean/scene';
 
@@ -68,6 +69,16 @@ function projectCard(project: Project) {
     <div class="project-name"><h3 lang="en">${escape(project.title)}</h3>${arrow()}</div><p>${t(project.description)}</p>
   </a>`;
 }
+function featuredProjectRow(project: Project, index: number) {
+  return `<li class="featured-project reveal">
+    <a class="featured-project-link" href="${href(`/projects/${project.slug}`)}" data-route="/projects/${project.slug}">
+      <span class="featured-project-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
+      <div class="featured-project-title"><span class="featured-project-category" lang="en">${escape(project.category)}</span><h3 lang="en">${escape(project.title)}</h3></div>
+      <div class="featured-project-description"><span class="preview-badge">${t(copy.preview)}</span><p>${t(project.description)}</p></div>
+      <span class="featured-project-arrow">${arrow()}</span>
+    </a>
+  </li>`;
+}
 function journalCard() {
   return `<a class="journal-card reveal" href="${href(`/journal/${article.slug}`)}" data-route="/journal/${article.slug}">
     <div class="journal-art" aria-hidden="true"><div class="journal-light"></div><div class="journal-water"></div></div>
@@ -92,9 +103,9 @@ function home() {
       <div class="section-copy reveal"><h2 lang="en">A little about me</h2><p>${t(copy.aboutIntro)}</p><div class="actions">${routeLink('/about', t(copy.readStory), 'button button-ocean')}${cvLink()}</div></div>
     </section>
     <section class="projects-preview section content-section" id="projects">
-      <div class="section-heading reveal">${heading(copy.projectsFirst, copy.projectsSecond)}<p>${t(copy.projectsIntro)}</p></div>
-      <div class="project-grid">${projects.map(projectCard).join('')}</div>
-      <div class="section-actions reveal">${routeLink('/projects', t(copy.allProjects), 'button button-outline')}</div>
+      <div class="featured-projects-heading reveal"><h2 lang="en">${escape(copy.projectsFirst)} <em>${escape(copy.projectsSecond)}</em></h2><p>${t(copy.projectsIntro)}</p></div>
+      <ol class="featured-projects-list">${projects.map(featuredProjectRow).join('')}</ol>
+      <div class="featured-projects-actions reveal">${routeLink('/projects', t(copy.allProjects), 'button button-ocean')}</div>
     </section>
     <section class="bridge section" id="curiosity" data-formation="vortex">
       <div class="bridge-copy">${heading(copy.bridgeFirst, copy.bridgeSecond)}</div>

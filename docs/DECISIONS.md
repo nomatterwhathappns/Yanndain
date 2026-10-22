@@ -64,6 +64,8 @@ The user has not supplied a full name, CV, contact details, completed project do
 
 ## Delivery
 
+Home's featured projects use a numbered, full-width list without cover images. Each row contains its category, title, preview status, description, and a direct detail link. Hover and keyboard focus emphasize the row; mobile keeps all information visible without hover. The all-projects CTA uses the ocean button style. This is a visual proposal pending review; existing example copy and the separate Projects page remain unchanged.
+
 The workspace's localhost cannot be opened on the user's computer through a plain URL. Deliver the self-contained `yanndain-ocean-v4.html` through chat. Keep an identical `yanndain-preview.html` for existing links. Generated HTML exports stay local and are ignored by Git; GitHub contains organized source under app, content, ocean and styles folders. A published web deployment is a separate action.
 
 ## Swimming and mobile composition
