@@ -35,12 +35,12 @@ function writeLocation(url: string, replace = false) {
     // writes. Navigation still renders in memory in that restricted container.
   }
 }
-function arrow(direction: 'right' | 'down' | 'up' | 'back' = 'right') {
-  const paths = { right: 'M5 19 19 5M7 5h12v12', down: 'M12 4v16m-6-6 6 6 6-6', up: 'M12 20V4m-6 6 6-6 6 6', back: 'M20 12H4m6-6-6 6 6 6' };
+function arrow(direction: 'down' | 'up' | 'back') {
+  const paths = { down: 'M12 4v16m-6-6 6 6 6-6', up: 'M12 20V4m-6 6 6-6 6 6', back: 'M20 12H4m6-6-6 6 6 6' };
   return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="${paths[direction]}" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 function routeLink(path: string, text: string, className = 'text-link') {
-  return `<a class="${className}" href="${href(path)}" data-route="${path}"><span>${text}</span>${arrow()}</a>`;
+  return `<a class="${className}" href="${href(path)}" data-route="${path}"><span>${text}</span></a>`;
 }
 function sectionLink(section: string, text: string, className = 'text-link', direction: 'down' | 'up' = 'down') {
   const url = portable ? `${href('/')}?section=${section}` : `${href('/')}#${section}`;
@@ -48,7 +48,7 @@ function sectionLink(section: string, text: string, className = 'text-link', dir
 }
 function cvLink() {
   const url = profile.cv[language] || profile.cv.en || profile.cv.id;
-  return url ? `<a class="text-link cv-link" href="${escape(url)}" target="_blank" rel="noopener noreferrer"><span>${t(copy.viewCV)}</span>${arrow()}</a>` : '';
+  return url ? `<a class="text-link cv-link" href="${escape(url)}" target="_blank" rel="noopener noreferrer"><span>${t(copy.viewCV)}</span></a>` : '';
 }
 function heading(first: string, second: string, tag = 'h2') {
   return `<${tag} lang="en">${escape(first)}<br><em>${escape(second)}</em></${tag}>`;
@@ -66,7 +66,7 @@ function projectCard(project: Project) {
   return `<a class="project-card reveal" data-category="${project.category}" href="${href(`/projects/${project.slug}`)}" data-route="/projects/${project.slug}">
     ${art(project.art)}
     <div class="project-meta"><span>${project.category}</span><span class="preview-badge">${t(copy.preview)}</span></div>
-    <div class="project-name"><h3 lang="en">${escape(project.title)}</h3>${arrow()}</div><p>${t(project.description)}</p>
+    <div class="project-name"><h3 lang="en">${escape(project.title)}</h3></div><p>${t(project.description)}</p>
   </a>`;
 }
 function featuredProjectRow(project: Project, index: number) {
@@ -75,14 +75,13 @@ function featuredProjectRow(project: Project, index: number) {
       <span class="featured-project-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
       <div class="featured-project-title"><span class="featured-project-category" lang="en">${escape(project.category)}</span><h3 lang="en">${escape(project.title)}</h3></div>
       <div class="featured-project-description"><span class="preview-badge">${t(copy.preview)}</span><p>${t(project.description)}</p></div>
-      <span class="featured-project-arrow">${arrow()}</span>
     </a>
   </li>`;
 }
 function journalCard() {
   return `<a class="journal-card reveal" href="${href(`/journal/${article.slug}`)}" data-route="/journal/${article.slug}">
     <div class="journal-art" aria-hidden="true"><div class="journal-light"></div><div class="journal-water"></div></div>
-    <div class="journal-card-copy"><span class="preview-badge">${t(copy.preview)}</span><h3 lang="en">${escape(article.title)}</h3><p>${t(article.description)}</p><span class="journal-arrow">${arrow()}</span></div>
+    <div class="journal-card-copy"><span class="preview-badge">${t(copy.preview)}</span><h3 lang="en">${escape(article.title)}</h3><p>${t(article.description)}</p></div>
   </a>`;
 }
 function footer() {
@@ -124,9 +123,9 @@ function home() {
 }
 function contactLinks() {
   const links = [];
-  if (profile.email) links.push(`<a class="text-link" href="mailto:${escape(profile.email)}">${t(copy.email)}${arrow()}</a>`);
-  if (profile.github) links.push(`<a class="text-link" href="${escape(profile.github)}" target="_blank" rel="noopener noreferrer">GitHub${arrow()}</a>`);
-  if (profile.linkedin) links.push(`<a class="text-link" href="${escape(profile.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn${arrow()}</a>`);
+  if (profile.email) links.push(`<a class="text-link" href="mailto:${escape(profile.email)}">${t(copy.email)}</a>`);
+  if (profile.github) links.push(`<a class="text-link" href="${escape(profile.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>`);
+  if (profile.linkedin) links.push(`<a class="text-link" href="${escape(profile.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`);
   return links.length ? links.join('') : `<p class="pending-contact">${t(copy.contactPending)}</p>`;
 }
 function pageShell(content: string, backTo = '/') {
@@ -192,7 +191,7 @@ function refreshChrome() {
     ['/', copy.home], ['/about', copy.about], ['/projects', copy.projects], ['/journal', copy.journal],
   ].map(([path, label]) => {
     const current = route === path;
-    return `<a href="${href(path as string)}" data-route="${path}" ${current ? 'aria-current="page"' : ''}><span>${t(label as Localized)}</span>${arrow()}</a>`;
+    return `<a href="${href(path as string)}" data-route="${path}" ${current ? 'aria-current="page"' : ''}><span>${t(label as Localized)}</span></a>`;
   }).join('') + sectionLink('contact', t(copy.contact));
   $$<HTMLButtonElement>('[data-language]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.language === language)));
   refreshMotion();
