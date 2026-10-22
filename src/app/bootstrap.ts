@@ -75,7 +75,7 @@ function journalCard() {
   </a>`;
 }
 function footer() {
-  return `<footer><a href="${href('/')}" data-route="/" class="footer-brand">yanndain.</a>${sectionLink('surface', t(copy.surface), 'text-link', 'up')}</footer>`;
+  return `<footer><a href="${href('/')}" data-route="/" class="footer-brand">yanndain</a>${sectionLink('surface', t(copy.surface), 'text-link', 'up')}</footer>`;
 }
 function home() {
   return `
@@ -122,13 +122,13 @@ function pageShell(content: string, backTo = '/') {
 }
 function aboutPage() {
   return pageShell(`
-    <div class="page-heading">${heading(copy.aboutFirst, copy.aboutSecond, 'h1')}<p>${t(copy.aboutIntro)}</p></div>
+    <div class="page-heading"><h1 lang="en">About me</h1></div>
     <div class="about-layout">
       <div class="portrait-placeholder" aria-label="${t(words('Tempat foto profil', 'Profile image placeholder'))}"><span>Y</span><p>Yanndain</p></div>
       <div class="about-story"><h2>${escape(profile.name)}</h2><p class="profile-handle">@yanndain</p>
-      <p>${t(words('Bagian ini disiapkan untuk cerita personal, latar pendidikan, dan perjalanan belajar. Isi profil lengkap akan ditambahkan setelah arah visualnya selesai.', 'This space is ready for a personal story, education, and the learning journey. The complete profile will be added once the visual direction is settled.'))}</p>
+      <p>${t(copy.aboutStory)}</p>
       <h3 lang="en">Current focus.</h3><p>${t(copy.focusText)}</p>
-      <div class="actions">${cvLink()}${routeLink('/projects', t(copy.allProjects))}</div></div>
+      <div class="actions">${cvLink()}${routeLink('/projects', t(copy.viewProjects), 'button button-ocean')}</div></div>
     </div>`);
 }
 function projectsPage() {
@@ -170,7 +170,8 @@ function refreshChrome() {
   storage.set('yanndain-language', language);
   $('.skip-link').textContent = t(copy.skip);
   $('.brand').setAttribute('href', href('/'));
-  $('.brand').setAttribute('aria-label', `Yanndain — ${t(copy.home)}`);
+  $('.brand').setAttribute('aria-label', `${profile.name} — ${t(copy.home)}`);
+  $('.brand span').textContent = profile.name;
   $('.menu-toggle').setAttribute('aria-label', t(copy.openMenu));
   $('.menu-close').setAttribute('aria-label', t(copy.closeMenu));
   $('#menu-title').textContent = copy.menu.en;

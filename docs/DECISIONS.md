@@ -2,6 +2,8 @@
 
 ## About introduction
 
+The full About page uses “About me” with no repeated introductory paragraph under the title. Its bilingual biography describes independent learning alongside coursework, HTB/THM labs, and the move toward defense. “Current focus.” uses direct wording about security engineering. The project CTA uses the ocean button style. The portrait remains a placeholder until a real photo is provided; its frame is a plain 4:5 rectangle with an 8px radius and a subtle border. All page headers display Ryanda Fajr Abdilah, and all footer wordmarks read “yanndain” without a period.
+
 The Home introduction is titled “A little about me”. Its bilingual description explains the transition from red team labs on HTB and THM toward building and maintaining secure systems. The translucent ocean button “Kenali lebih dekat” / “More about me” opens the full About page.
 
 500 of the existing sardines form a tapered, rising tornado on the left. Five spiral streams all move upward, distributed by cone surface area so the narrow base does not accumulate fish. Fish fade at the top and reappear at the bottom while hidden; no visible downward return path is used. Background schools move deeper behind the cone to keep its flow readable. Scroll blends the formation in and out; reverse scrolling restores it. Mobile reserves space above the copy for the formation. Reduced motion keeps the scene static. The total remains 900 animals.
