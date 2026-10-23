@@ -116,7 +116,7 @@ function contactLinks() {
 }
 function pageShell(content: string, backTo = '/', backSection?: string) {
   const back = backSection ? sectionLink(backSection, t(words('Kembali ke proyek', 'Back to projects')), 'back-link', 'back') : `<a class="back-link" href="${href(backTo)}" data-route="${backTo}">${arrow('back')}<span>${t(backTo === '/' ? copy.backHome : copy.back)}</span></a>`;
-  return `<div class="inner-page section">${back}${content}${footer()}</div>`;
+  return `<div class="inner-page section${backSection === 'projects' ? ' project-page' : ''}">${back}${content}${footer()}</div>`;
 }
 function aboutPage() {
   return pageShell(`
@@ -135,14 +135,26 @@ function journalPage() {
 function detailPage(kind: 'project' | 'article', slug: string) {
   const item = kind === 'project' ? projects.find(project => project.slug === slug) : slug === article.slug ? article : undefined;
   if (!item) return notFound();
-  const parent = kind === 'project' ? '/' : '/journal';
-  return pageShell(`<article${kind === 'project' ? ' class="project-detail"' : ''}>
+  if (kind === 'project') {
+    const project = item as Project;
+    return pageShell(`<article class="project-detail">
+      <header class="project-intro">
+        <p class="project-category" lang="en">${escape(project.category)}</p>
+        <h1 lang="en">${escape(project.title)}</h1>
+        <div class="project-summary"><p>${t(project.description)}</p><span class="preview-badge">${t(copy.preview)}</span></div>
+      </header>
+      <div class="article-body">${project.sections.map((section, i) => `<section id="part-${i}"><h2 lang="en">${escape(section.title)}</h2><p>${t(section.description)}</p></section>`).join('')}</div>
+      <div class="detail-bottom">${sectionLink('projects', t(copy.nextProject), 'button button-ocean', null)}</div>
+    </article>`, '/', 'projects');
+  }
+  const parent = '/journal';
+  return pageShell(`<article>
     <div class="detail-heading"><span class="preview-badge">${t(copy.preview)}</span><h1 lang="en">${escape(item.title)}</h1><p>${t(item.description)}</p></div>
     <div class="content-notice">${t(copy.previewNotice)}</div>
     <div class="article-layout"><aside class="table-of-contents"><h2 lang="en">${copy.contents}</h2>${item.sections.map((section, i) => `<a href="#part-${i}" data-jump="part-${i}">${escape(section.title)}</a>`).join('')}</aside>
     <div class="article-body">${item.sections.map((section, i) => `<section id="part-${i}"><h2 lang="en">${escape(section.title)}</h2><p>${t(section.description)}</p></section>`).join('')}</div></div>
-    <div class="detail-bottom">${kind === 'project' ? sectionLink('projects', t(copy.nextProject), 'button button-ocean', null) : routeLink(parent, t(copy.nextArticle), 'button button-outline')}</div>
-  </article>`, parent, kind === 'project' ? 'projects' : undefined);
+    <div class="detail-bottom">${routeLink(parent, t(copy.nextArticle), 'button button-outline')}</div>
+  </article>`, parent);
 }
 function notFound() { return pageShell(`<div class="page-heading"><h1 lang="en">${copy.notFound}</h1>${routeLink('/', t(copy.backHome), 'button button-light')}</div>`); }
 

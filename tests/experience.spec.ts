@@ -42,7 +42,7 @@ test('section buttons open real pages, localized detail routes survive reload an
   await expect(page.locator('.featured-projects-panel')).toBeInViewport();
   await page.locator('.featured-project-link').nth(1).click();
   await expect(page).toHaveURL(/\/id\/projects\/signals-preview$/);
-  await expect(page.locator('.content-notice')).toContainText('Contoh susunan konten');
+  await expect(page.locator('.project-summary .preview-badge')).toContainText('Pratinjau');
   const detailHeadings = await page.locator('h1,h2,h3').allTextContents();
   const detailBody = await page.locator('.article-body').textContent();
   await page.getByRole('button', { name: 'EN', exact: true }).click();
@@ -177,8 +177,7 @@ test('retired project index redirects home and detail navigation returns to the 
     await expect(page.locator('.filters, .project-card')).toHaveCount(0);
     await page.locator('.featured-project-link').first().click();
     await expect(page.locator('.project-detail .article-body')).toBeVisible();
-    await page.locator('.table-of-contents a').nth(1).click();
-    await expect(page.locator('#part-1')).toBeInViewport();
+    await expect(page.locator('.project-detail .table-of-contents, .project-detail .content-notice')).toHaveCount(0);
     await page.locator('.back-link').click();
     await expect(page.locator('.featured-projects-panel')).toBeInViewport();
     await page.locator('.featured-project-link').last().click();
