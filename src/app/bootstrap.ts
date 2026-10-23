@@ -159,7 +159,6 @@ function detailPage(kind: 'project' | 'article', slug: string) {
   return pageShell(`<article>
     <div class="detail-heading"><span class="preview-badge">${t(copy.preview)}</span><h1 lang="en">${escape(item.title)}</h1><p>${t(item.description)}</p></div>
     <div class="content-notice">${t(copy.previewNotice)}</div>
-    ${kind === 'project' ? `<div class="detail-art">${art((item as Project).art)}</div>` : ''}
     <div class="article-layout"><aside class="table-of-contents"><h2 lang="en">${copy.contents}</h2>${item.sections.map((section, i) => `<a href="#part-${i}" data-jump="part-${i}">${escape(section.title)}</a>`).join('')}</aside>
     <div class="article-body">${item.sections.map((section, i) => `<section id="part-${i}"><h2 lang="en">${escape(section.title)}</h2><p>${t(section.description)}</p></section>`).join('')}</div></div>
     <div class="detail-bottom">${routeLink(parent, t(kind === 'project' ? copy.nextProject : copy.nextArticle), 'button button-outline')}</div>

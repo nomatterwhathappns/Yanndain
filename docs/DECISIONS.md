@@ -64,6 +64,8 @@ The user has not supplied a full name, CV, contact details, completed project do
 
 ## Delivery
 
+Project detail pages omit the decorative cover image. The title, summary, and preview notice lead directly into the table of contents and article body. Alternative detail layouts are still under discussion.
+
 Home's projects use a numbered list without cover images inside a translucent ocean panel. Desktop limits the panel height, shows a scrollbar and a partial next row, and supports keyboard scrolling. At mobile widths the panel expands to its content and uses normal page scrolling. Each row contains its category, title, preview status, description, and a direct detail link. Hover and keyboard focus emphasize the row. The all-projects CTA is removed from Home. Existing example copy and the separate Projects page remain unchanged. Decorative diagonal arrows are removed globally from buttons, project and journal entries, CV/contact links, and menu entries. Hover/focus color feedback and keyboard outlines indicate interactivity. Functional menu, back, and vertical section-navigation icons remain.
 
 The workspace's localhost cannot be opened on the user's computer through a plain URL. Deliver the self-contained `yanndain-ocean-v4.html` through chat. Keep an identical `yanndain-preview.html` for existing links. Generated HTML exports stay local and are ignored by Git; GitHub contains organized source under app, content, ocean and styles folders. A published web deployment is a separate action.
