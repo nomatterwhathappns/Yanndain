@@ -47,8 +47,8 @@ Separate views: About, Project Detail, Journal, Article Detail. The retired Proj
 
 The curiosity quote keeps its own connected transition space:
 
-> Stay  
-> curious.
+> Learn.<br>
+> Build. Repeat.
 
 500 sardines converge into an organic vortex around the words and continue swimming along the ring. Nonparticipating fish continue in other layers. Continuing down dissolves the vortex into ordinary schooling before the next section.
 

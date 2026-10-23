@@ -30,7 +30,7 @@ export const copy = {
   projectsFirst: 'Learning', projectsSecond: 'by doing.',
   projectsIntro: words('Ruang untuk eksperimen dan proses di baliknya. Susunan awal ini akan diisi dengan karya nyata.', 'A space for experiments and the process behind them. This opening collection will be filled with real work.'),
   allProjects: words('Jelajahi semua proyek', 'Explore all projects'),
-  bridgeFirst: 'Stay', bridgeSecond: 'curious.',
+  bridgeFirst: 'Learn.', bridgeSecond: 'Build. Repeat.',
   journalFirst: 'Notes', journalSecond: 'along the way.',
   journalIntro: words('Pertanyaan, proses, dan penemuan kecil. Tempat untuk merangkai apa yang dipelajari, satu catatan pada satu waktu.', 'Questions, process, and little discoveries. A place to piece together what was learned, one note at a time.'),
   allNotes: words('Buka semua catatan', 'Enter the journal'),
