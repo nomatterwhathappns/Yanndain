@@ -1,0 +1,48 @@
+/* A reading surface with a sticky index; scrolling belongs to the page. */
+.project-detail .detail-heading { max-width: 900px; }
+.project-detail .article-layout {
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: 48px;
+}
+.project-detail .table-of-contents { top: 110px; padding: 18px 0; }
+.project-detail .table-of-contents a {
+  border-left: 1px solid #bad6d540;
+  padding: 5px 0 5px 16px;
+  transition: color .25s, border-color .25s, background .25s;
+}
+.project-detail .table-of-contents a:hover,
+.project-detail .table-of-contents a:focus-visible {
+  color: #e4f3eb;
+  border-color: #c0e8df;
+  background: #80b9bd14;
+}
+.project-detail .article-body {
+  max-width: 880px;
+  min-width: 0;
+  padding: clamp(30px, 4vw, 60px);
+  border: 1px solid #b7d3d533;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #153743db, #081f2de8);
+  box-shadow: 0 24px 70px #00121b30;
+  backdrop-filter: blur(8px);
+}
+.project-detail .article-body > section { padding-bottom: 38px; }
+.project-detail .article-body > section + section { padding-top: 38px; border-top: 1px solid #b7d3d526; }
+.project-detail .article-body > section:last-child { padding-bottom: 0; }
+.project-detail .article-body h2 { font-size: clamp(32px, 3.2vw, 44px); line-height: 1.15; }
+.project-detail .article-body p { color: #c0d0d4; }
+.project-detail .detail-bottom { margin: 32px 0 0 calc(210px + clamp(28px, 4vw, 64px)); }
+@media (max-width: 1000px) {
+  .project-detail .article-layout { grid-template-columns: 170px minmax(0, 1fr); gap: 28px; }
+  .project-detail .detail-bottom { margin-left: 198px; }
+}
+@media (max-width: 760px) {
+  .project-detail .article-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 28px; }
+  .project-detail .table-of-contents { position: static; padding: 0 0 24px; }
+  .project-detail .article-body { padding: 28px 20px; border-radius: 10px; }
+  .project-detail .article-body h2 { font-size: 32px; overflow-wrap: anywhere; }
+  .project-detail .article-body > section { padding-bottom: 28px; scroll-margin-top: 105px; }
+  .project-detail .article-body > section + section { padding-top: 28px; }
+  .project-detail .detail-bottom { margin-left: 0; }
+}

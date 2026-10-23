@@ -3,6 +3,7 @@ import '@fontsource/instrument-serif/latin-400.css';
 import '@fontsource/instrument-serif/latin-400-italic.css';
 import '../styles/main.css';
 import '../styles/featured-projects.css';
+import '../styles/project-detail.css';
 import { article, copy, local, profile, projects, words, type Language, type Localized, type Project } from '../content';
 import type { OceanControls, OceanState } from '../ocean/scene';
 
@@ -42,9 +43,10 @@ function arrow(direction: 'down' | 'up' | 'back') {
 function routeLink(path: string, text: string, className = 'text-link') {
   return `<a class="${className}" href="${href(path)}" data-route="${path}"><span>${text}</span></a>`;
 }
-function sectionLink(section: string, text: string, className = 'text-link', direction: 'down' | 'up' = 'down') {
-  const url = portable ? `${href('/')}?section=${section}` : `${href('/')}#${section}`;
-  return `<a class="${className}" href="${url}" data-section="${section}"><span>${text}</span>${arrow(direction)}</a>`;
+function sectionHref(section: string) { return `${href('/')}${portable ? '?section=' : '#'}${section}`; }
+function sectionLink(section: string, text: string, className = 'text-link', direction: 'down' | 'up' | 'back' | null = 'down') {
+  const url = sectionHref(section);
+  return `<a class="${className}" href="${url}" data-section="${section}"><span>${text}</span>${direction ? arrow(direction) : ''}</a>`;
 }
 function cvLink() {
   const url = profile.cv[language] || profile.cv.en || profile.cv.id;
@@ -52,22 +54,6 @@ function cvLink() {
 }
 function heading(first: string, second: string, tag = 'h2') {
   return `<${tag} lang="en">${escape(first)}<br><em>${escape(second)}</em></${tag}>`;
-}
-function art(type: Project['art']) {
-  // Scenic placeholders, not fabricated screenshots of completed work.
-  const paths = {
-    lab: '<path d="M0 280 45 205 86 228 134 165 171 228 206 204 250 269 300 235 355 190 400 225v75H0Z" fill="#071f2b"/><path d="m0 300 87-45 70 22 92-38 76 43 75-25v43" fill="#0b2f39"/>',
-    signal: '<path d="M0 250Q80 125 160 230T400 210v90H0Z" fill="#0a2635"/><path d="M0 285Q100 220 205 268T400 240v60H0Z" fill="#0b3340"/>',
-    flow: '<path d="M0 300V80l40 27 15 70 65 23 34 100M400 300V60l-50 35-22 73-60 65-15 67" fill="#0a2430"/><path d="M0 300V140l38 67 50 35 27 58M400 300V160l-63 65-22 75" fill="#10303a"/>',
-  };
-  return `<div class="project-art art-${type}" aria-hidden="true"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">${paths[type]}</svg><span class="art-light"></span></div>`;
-}
-function projectCard(project: Project) {
-  return `<a class="project-card reveal" data-category="${project.category}" href="${href(`/projects/${project.slug}`)}" data-route="/projects/${project.slug}">
-    ${art(project.art)}
-    <div class="project-meta"><span>${project.category}</span><span class="preview-badge">${t(copy.preview)}</span></div>
-    <div class="project-name"><h3 lang="en">${escape(project.title)}</h3></div><p>${t(project.description)}</p>
-  </a>`;
 }
 function featuredProjectRow(project: Project, index: number) {
   return `<li class="featured-project">
@@ -128,8 +114,9 @@ function contactLinks() {
   if (profile.linkedin) links.push(`<a class="text-link" href="${escape(profile.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`);
   return links.length ? links.join('') : `<p class="pending-contact">${t(copy.contactPending)}</p>`;
 }
-function pageShell(content: string, backTo = '/') {
-  return `<div class="inner-page section"><a class="back-link" href="${href(backTo)}" data-route="${backTo}">${arrow('back')}<span>${t(backTo === '/' ? copy.backHome : copy.back)}</span></a>${content}${footer()}</div>`;
+function pageShell(content: string, backTo = '/', backSection?: string) {
+  const back = backSection ? sectionLink(backSection, t(words('Kembali ke proyek', 'Back to projects')), 'back-link', 'back') : `<a class="back-link" href="${href(backTo)}" data-route="${backTo}">${arrow('back')}<span>${t(backTo === '/' ? copy.backHome : copy.back)}</span></a>`;
+  return `<div class="inner-page section">${back}${content}${footer()}</div>`;
 }
 function aboutPage() {
   return pageShell(`
@@ -139,15 +126,8 @@ function aboutPage() {
       <div class="about-story"><h2>${escape(profile.name)}</h2><p class="profile-handle">@yanndain</p>
       <p>${t(copy.aboutStory)}</p>
       <h3 lang="en">Current focus.</h3><p>${t(copy.focusText)}</p>
-      <div class="actions">${cvLink()}${routeLink('/projects', t(copy.viewProjects), 'button button-ocean')}</div></div>
+      <div class="actions">${cvLink()}${sectionLink('projects', t(copy.viewProjects), 'button button-ocean', null)}</div></div>
     </div>`);
-}
-function projectsPage() {
-  return pageShell(`<div class="page-heading">${heading(copy.projectsFirst, copy.projectsSecond, 'h1')}<p>${t(copy.projectPreviewNotice)}</p></div>
-    <div class="filters" role="group" aria-label="${t(words('Kategori proyek', 'Project categories'))}">
-      ${['all', 'Security Engineering', 'Detection', 'Automation'].map((category, i) => `<button type="button" data-filter="${category}" aria-pressed="${i === 0}">${category === 'all' ? t(copy.all) : category}</button>`).join('')}
-    </div><div class="project-grid">${projects.map(projectCard).join('')}</div>
-    <p class="filter-empty" hidden>${t(copy.emptyFilter)}</p>`);
 }
 function journalPage() {
   return pageShell(`<div class="page-heading">${heading(copy.journalFirst, copy.journalSecond, 'h1')}<p>${t(copy.articlePreviewNotice)}</p></div><div class="journal-list">${journalCard()}</div>`);
@@ -155,14 +135,14 @@ function journalPage() {
 function detailPage(kind: 'project' | 'article', slug: string) {
   const item = kind === 'project' ? projects.find(project => project.slug === slug) : slug === article.slug ? article : undefined;
   if (!item) return notFound();
-  const parent = kind === 'project' ? '/projects' : '/journal';
-  return pageShell(`<article>
+  const parent = kind === 'project' ? '/' : '/journal';
+  return pageShell(`<article${kind === 'project' ? ' class="project-detail"' : ''}>
     <div class="detail-heading"><span class="preview-badge">${t(copy.preview)}</span><h1 lang="en">${escape(item.title)}</h1><p>${t(item.description)}</p></div>
     <div class="content-notice">${t(copy.previewNotice)}</div>
     <div class="article-layout"><aside class="table-of-contents"><h2 lang="en">${copy.contents}</h2>${item.sections.map((section, i) => `<a href="#part-${i}" data-jump="part-${i}">${escape(section.title)}</a>`).join('')}</aside>
     <div class="article-body">${item.sections.map((section, i) => `<section id="part-${i}"><h2 lang="en">${escape(section.title)}</h2><p>${t(section.description)}</p></section>`).join('')}</div></div>
-    <div class="detail-bottom">${routeLink(parent, t(kind === 'project' ? copy.nextProject : copy.nextArticle), 'button button-outline')}</div>
-  </article>`, parent);
+    <div class="detail-bottom">${kind === 'project' ? sectionLink('projects', t(copy.nextProject), 'button button-ocean', null) : routeLink(parent, t(copy.nextArticle), 'button button-outline')}</div>
+  </article>`, parent, kind === 'project' ? 'projects' : undefined);
 }
 function notFound() { return pageShell(`<div class="page-heading"><h1 lang="en">${copy.notFound}</h1>${routeLink('/', t(copy.backHome), 'button button-light')}</div>`); }
 
@@ -172,6 +152,8 @@ function parseLocation() {
   const match = pathname.match(/^\/(id|en)(\/.*)?$/);
   if (match) { language = match[1] as Language; route = match[2] || '/'; }
   else { route = pathname === '/' || pathname.endsWith('index.html') ? '/' : pathname; }
+  // Old project-index bookmarks now open the Home project collection.
+  if (route === '/projects') { route = '/'; writeLocation(sectionHref('projects'), true); }
 }
 function refreshChrome() {
   document.documentElement.lang = language;
@@ -189,6 +171,7 @@ function refreshChrome() {
   $('.menu-links').innerHTML = [
     ['/', copy.home], ['/about', copy.about], ['/projects', copy.projects], ['/journal', copy.journal],
   ].map(([path, label]) => {
+    if (path === '/projects') return sectionLink('projects', t(label as Localized), '', null);
     const current = route === path;
     return `<a href="${href(path as string)}" data-route="${path}" ${current ? 'aria-current="page"' : ''}><span>${t(label as Localized)}</span></a>`;
   }).join('') + sectionLink('contact', t(copy.contact));
@@ -199,7 +182,7 @@ function render() {
   revealObserver?.disconnect();
   refreshChrome();
   const parts = route.split('/').filter(Boolean);
-  main.innerHTML = route === '/' ? home() : route === '/about' ? aboutPage() : route === '/projects' ? projectsPage()
+  main.innerHTML = route === '/' ? home() : route === '/about' ? aboutPage()
     : route === '/journal' ? journalPage() : parts[0] === 'projects' && parts.length === 2 ? detailPage('project', parts[1])
     : parts[0] === 'journal' && parts.length === 2 ? detailPage('article', parts[1]) : notFound();
   revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -209,6 +192,7 @@ function render() {
   updateScene();
 }
 function navigate(path: string, options: { lang?: Language; section?: string; preserve?: boolean; replace?: boolean } = {}) {
+  if (path === '/projects') { path = '/'; options = { ...options, section: 'projects' }; }
   const oldScroll = window.scrollY;
   if (route === '/') savedHomeScroll = oldScroll;
   const oldRoute = route;
@@ -250,13 +234,7 @@ document.addEventListener('click', event => {
       document.getElementById(link.dataset.section)?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth' });
     } else navigate(link.dataset.route || '/', { section: link.dataset.section });
   }
-  const filter = target.closest<HTMLButtonElement>('[data-filter]');
-  if (filter) {
-    $$<HTMLButtonElement>('[data-filter]').forEach(button => button.setAttribute('aria-pressed', String(button === filter)));
-    $$<HTMLAnchorElement>('.project-card').forEach(card => {
-      card.hidden = filter.dataset.filter !== 'all' && card.dataset.category !== filter.dataset.filter;
-    });
-  }
+
 });
 $$<HTMLButtonElement>('[data-language]').forEach(button => button.addEventListener('click', () => navigate(route, { lang: button.dataset.language as Language, preserve: true, replace: true })));
 $('.menu-toggle').addEventListener('click', () => {

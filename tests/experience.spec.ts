@@ -38,10 +38,9 @@ test('section buttons open real pages, localized detail routes survive reload an
   await expect(page.locator('.page-heading h1')).toHaveText('About me');
   await expect(page.locator('.page-heading>p')).toHaveCount(0);
   await page.getByRole('link', { name: 'Lihat proyek', exact: true }).click();
-  await expect(page).toHaveURL(/\/id\/projects$/);
-  await page.getByRole('button', { name: 'Detection', exact: true }).click();
-  await expect(page.locator('.project-card:visible')).toHaveCount(1);
-  await page.locator('.project-card:visible').click();
+  await expect(page).toHaveURL(/\/id#projects$/);
+  await expect(page.locator('.featured-projects-panel')).toBeInViewport();
+  await page.locator('.featured-project-link').nth(1).click();
   await expect(page).toHaveURL(/\/id\/projects\/signals-preview$/);
   await expect(page.locator('.content-notice')).toContainText('Contoh susunan konten');
   const detailHeadings = await page.locator('h1,h2,h3').allTextContents();
@@ -54,8 +53,8 @@ test('section buttons open real pages, localized detail routes survive reload an
   await page.reload();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Reading the signals.');
   await page.goBack();
-  await expect(page).toHaveURL(/\/id\/projects$/);
-  await expect(page.locator('.project-card')).toHaveCount(3);
+  await expect(page).toHaveURL(/\/id#projects$/);
+  await expect(page.locator('.featured-project-link')).toHaveCount(3);
 });
 
 test('vortex forms, dissolves, forms again on reverse scroll; horizon uses corridor', async ({ page }) => {
@@ -161,6 +160,47 @@ test('without WebGL, content and route navigation remain usable', async ({ page 
   await expect(page.locator('.article-body')).toBeVisible();
   await page.getByRole('button', { name: 'EN', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('A home lab.');
+});
+
+test('retired project index redirects home and detail navigation returns to the collection', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type: string, ...args: unknown[]) {
+      return type.includes('webgl') ? null : original.call(this, type, ...args);
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+  for (const language of ['id', 'en']) {
+    await page.goto(`/${language}/projects`);
+    await expect(page).toHaveURL(new RegExp(`/${language}#projects$`));
+    await expect(page.locator('.featured-projects-panel')).toBeInViewport();
+    await expect(page.locator('.filters, .project-card')).toHaveCount(0);
+    await page.locator('.featured-project-link').first().click();
+    await expect(page.locator('.project-detail .article-body')).toBeVisible();
+    await page.locator('.table-of-contents a').nth(1).click();
+    await expect(page.locator('#part-1')).toBeInViewport();
+    await page.locator('.back-link').click();
+    await expect(page.locator('.featured-projects-panel')).toBeInViewport();
+    await page.locator('.featured-project-link').last().click();
+    await page.locator('.detail-bottom a').click();
+    await expect(page.locator('.featured-projects-panel')).toBeInViewport();
+    await page.locator('.brand').click();
+    await page.locator('.menu-toggle').click();
+    await page.locator('.menu-links [data-section="projects"]').click();
+    await expect(page.locator('.featured-projects-panel')).toBeInViewport();
+  }
+
+  const html = await readFile('yanndain-preview.html', 'utf8');
+  await page.route('**/portable-projects', request => request.fulfill({ contentType: 'text/html', body: html }));
+  await page.goto('/portable-projects#/en/projects');
+  await expect(page).toHaveURL(/#\/en\?section=projects$/);
+  await expect(page.locator('.featured-projects-panel')).toBeInViewport();
+  await page.locator('.featured-project-link').first().click();
+  await expect(page).toHaveURL(/#\/en\/projects\/lab-preview$/);
+  await page.reload();
+  await expect(page.locator('.project-detail')).toBeVisible();
+  await page.locator('.back-link').click();
+  await expect(page).toHaveURL(/#\/en\?section=projects$/);
 });
 
 test('standalone preview runs without external resources and supports deep navigation', async ({ page }) => {

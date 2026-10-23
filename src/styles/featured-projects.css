@@ -1,4 +1,4 @@
-/* Home project index. Full project listings retain their own card layout. */
+/* The Home panel is the project collection; entries open their detail pages. */
 .featured-projects-heading {
   display: flex;
   align-items: flex-end;

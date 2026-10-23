@@ -34,14 +34,14 @@ Home flow:
 
 1. Hero with identity, dive CTA, and a CV link when a real file exists.
 2. About preview with a link to the separate About page.
-3. Featured project previews with direct detail links and an all-projects CTA.
+3. A scrollable Home project collection with direct detail links.
 4. Curiosity bridge.
 5. Journal preview with an all-notes CTA.
 6. Current learning focus.
 7. Horizon bridge.
 8. Contact and return-to-surface link.
 
-Separate views: About, Projects, Project Detail, Journal, Article Detail. Each is reachable by a localized route. Preview content is explicitly labeled until real records are available.
+Separate views: About, Project Detail, Journal, Article Detail. The retired Projects index redirects to the Home project section. Each is reachable by a localized route. Preview content is explicitly labeled until real records are available.
 
 ## Formations
 
@@ -64,9 +64,9 @@ The user has not supplied a full name, CV, contact details, completed project do
 
 ## Delivery
 
-Project detail pages omit the decorative cover image. The title, summary, and preview notice lead directly into the table of contents and article body. Alternative detail layouts are still under discussion.
+Project detail pages omit the decorative cover image. The title, summary, and preview notice lead directly into the table of contents and article body. Project detail text sits in a translucent dark blue reading panel with a sticky table of contents to its left. Mobile places the index above the panel, and the whole page scrolls naturally.
 
-Home's projects use a numbered list without cover images inside a translucent ocean panel. Desktop limits the panel height, shows a scrollbar and a partial next row, and supports keyboard scrolling. At mobile widths the panel expands to its content and uses normal page scrolling. Each row contains its category, title, preview status, description, and a direct detail link. Hover and keyboard focus emphasize the row. The all-projects CTA is removed from Home. Existing example copy and the separate Projects page remain unchanged. Decorative diagonal arrows are removed globally from buttons, project and journal entries, CV/contact links, and menu entries. Hover/focus color feedback and keyboard outlines indicate interactivity. Functional menu, back, and vertical section-navigation icons remain.
+Home's projects use a numbered list without cover images inside a translucent ocean panel. Desktop limits the panel height, shows a scrollbar and a partial next row, and supports keyboard scrolling. At mobile widths the panel expands to its content and uses normal page scrolling. Each row contains its category, title, preview status, description, and a direct detail link. Hover and keyboard focus emphasize the row. The all-projects CTA is removed from Home. Example copy is retained. The separate Projects page is removed; menu, About, and detail-page project links point to the Home project collection. Decorative diagonal arrows are removed globally from buttons, project and journal entries, CV/contact links, and menu entries. Hover/focus color feedback and keyboard outlines indicate interactivity. Functional menu, back, and vertical section-navigation icons remain.
 
 The workspace's localhost cannot be opened on the user's computer through a plain URL. Deliver the self-contained `yanndain-ocean-v4.html` through chat. Keep an identical `yanndain-preview.html` for existing links. Generated HTML exports stay local and are ignored by Git; GitHub contains organized source under app, content, ocean and styles folders. A published web deployment is a separate action.
 
