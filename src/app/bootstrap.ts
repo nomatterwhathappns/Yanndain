@@ -6,6 +6,8 @@ import '../styles/featured-projects.css';
 import '../styles/project-detail.css';
 import { article, copy, local, profile, projects, words, type Language, type Localized, type Project } from '../content';
 import type { OceanControls, OceanState } from '../ocean/scene';
+import { learningMap, mountLearningMap } from '../journal/map';
+import { journalMapCopy } from '../content/journal-map';
 
 const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const $$ = <T extends Element = HTMLElement>(selector: string) => [...document.querySelectorAll<T>(selector)];
@@ -20,6 +22,7 @@ let language: Language = storage.get('yanndain-language') === 'en' ? 'en' : 'id'
 let route = '/';
 let ocean: OceanControls | undefined;
 let revealObserver: IntersectionObserver | undefined;
+let disposeLearningMap: (() => void) | undefined;
 let queued = false;
 let savedHomeScroll = 0;
 let navigationToken = 0;
@@ -96,9 +99,10 @@ function home() {
     <section class="bridge section" id="curiosity" data-formation="vortex">
       <div class="bridge-copy">${heading(copy.bridgeFirst, copy.bridgeSecond)}</div>
     </section>
-    <section class="journal-preview section content-section" id="journal">
-      <div class="section-copy reveal">${heading(copy.journalFirst, copy.journalSecond)}<p>${t(copy.journalIntro)}</p>${routeLink('/journal', t(copy.allNotes), 'button button-outline')}</div>
-      ${journalCard()}
+    <section class="journal-preview journal-map-section section content-section" id="journal">
+      <div class="journal-map-heading reveal">${heading(copy.journalFirst, copy.journalSecond)}<p>${t(journalMapCopy.intro)}</p></div>
+      ${learningMap(language)}
+      <div class="journal-map-footer"><p class="journal-map-hint"><span class="map-mouse-hint">${t(journalMapCopy.hint)}</span><span class="map-touch-hint">${t(journalMapCopy.touchHint)}</span></p>${routeLink('/journal', t(copy.allNotes), 'button button-ocean')}</div>
     </section>
     <section class="current-focus section content-section" id="focus"><div class="focus-layout reveal">${heading(copy.focusFirst, copy.focusSecond)}<p>${t(copy.focusText)}</p></div></section>
     <section class="bridge horizon section" id="horizon" data-formation="corridor"><div class="bridge-copy">${heading(copy.horizonFirst, copy.horizonSecond)}</div></section>
@@ -192,11 +196,13 @@ function refreshChrome() {
 }
 function render() {
   revealObserver?.disconnect();
+  disposeLearningMap?.();
   refreshChrome();
   const parts = route.split('/').filter(Boolean);
   main.innerHTML = route === '/' ? home() : route === '/about' ? aboutPage()
     : route === '/journal' ? journalPage() : parts[0] === 'projects' && parts.length === 2 ? detailPage('project', parts[1])
     : parts[0] === 'journal' && parts.length === 2 ? detailPage('article', parts[1]) : notFound();
+  disposeLearningMap = mountLearningMap(document.querySelector('.learning-map'));
   revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver?.unobserve(entry.target); }
   }), { threshold: 0.08 });
@@ -340,4 +346,4 @@ import('../ocean/scene').then(({ mountOcean }) => {
   document.documentElement.dataset.scene = 'fallback';
   console.warn('The 3D ocean is unavailable; the readable static experience is active.', error instanceof Error ? error.message : '');
 });
-if (import.meta.hot) import.meta.hot.dispose(() => { ocean?.dispose(); revealObserver?.disconnect(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { ocean?.dispose(); revealObserver?.disconnect(); disposeLearningMap?.(); });

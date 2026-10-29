@@ -36,7 +36,7 @@ Home flow:
 2. About preview with a link to the separate About page.
 3. A scrollable Home project collection with direct detail links.
 4. Curiosity bridge.
-5. Journal preview with an all-notes CTA.
+5. Large interactive learning map with an all-notes CTA.
 6. Current learning focus.
 7. Horizon bridge.
 8. Contact and return-to-surface link.
@@ -44,6 +44,10 @@ Home flow:
 Separate views: About, Project Detail, Journal, Article Detail. The retired Projects index redirects to the Home project section. Each is reachable by a localized route. Preview content is explicitly labeled until real records are available.
 
 ## Formations
+
+The Home journal section is an ocean chart with contour lines and a winding route connecting five proposed learning topics. Hover or keyboard focus reveals a description near the stop; click/tap pins or closes it. Escape and outside clicks dismiss descriptions, and only one is open at a time. Mobile uses a taller route with touch targets and descriptions constrained to the screen. Labels remain English; descriptions and instructions localize. These are explicitly marked topic previews, not completed milestones or published articles. Topic data, map rendering/interactions, and styling live in separate modules. The journal index and article routes remain available through the all-notes link.
+
+The chart route mixes long turns, rounded corners, loops, and faint alternate branches around contour islands. A single illustrated fish follows the main route slowly, including a subtle tail stroke; it is a chart marker independent of the 900-animal Three.js scene. Movement pauses while a topic is open, when the map or browser tab is hidden, and when either reduced-motion preference is enabled. Desktop and mobile use distinct route compositions. At the end of the path the marker fades before returning to the start.
 
 The curiosity quote keeps its own connected transition space:
 

@@ -21,14 +21,19 @@ src/
 ├── app/
 │   └── bootstrap.ts        # Halaman, routing, menu, bahasa, integrasi scene
 ├── content/
-│   └── index.ts            # Profil, terjemahan, data proyek dan jurnal
+│   ├── index.ts            # Profil, terjemahan, data proyek dan jurnal
+│   └── journal-map.ts      # Topik dan posisi titik peta belajar
+├── journal/
+│   ├── map.ts              # Peta SVG, hover, fokus keyboard dan tap
+│   └── route-motion.ts     # Ikan penunjuk jalur dan kontrol jeda
 ├── ocean/
 │   ├── scene.ts            # Scene, kamera, cahaya, schooling dan formasi
 │   ├── fish-models.ts      # Geometri ikan, manta dan hiu
 │   ├── tornado.ts          # Jalur spiral vertikal untuk section About
 │   └── swimming.ts         # Jalur berenang dan distribusi ikan
 ├── styles/
-│   └── main.css            # Layout, komponen dan responsivitas
+│   ├── main.css            # Layout, komponen dan responsivitas
+│   └── journal-map.css     # Kontur laut, jalur dan titik interaktif
 └── vite-env.d.ts
 public/                     # Aset statis
 tests/                      # Pengujian browser
@@ -37,7 +42,7 @@ index.html                  # Dokumen dasar Vite
 vite.preview.config.ts      # Ekspor HTML lengkap
 ```
 
-Edit profil dan isi website di `src/content/index.ts`. Data proyek dan jurnal yang belum nyata ditandai sebagai preview. CV dan kontak hanya muncul setelah URL atau data asli diisi.
+Edit profil dan isi website di `src/content/index.ts`. Topik peta jurnal ada di `src/content/journal-map.ts`, dengan interaksi di `src/journal/map.ts` dan gaya di `src/styles/journal-map.css`. Data proyek dan jurnal yang belum nyata ditandai sebagai preview. CV dan kontak hanya muncul setelah URL atau data asli diisi.
 
 ## Build
 
