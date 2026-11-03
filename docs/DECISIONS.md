@@ -37,9 +37,8 @@ Home flow:
 3. A scrollable Home project collection with direct detail links.
 4. Curiosity bridge.
 5. Large interactive learning map with an all-notes CTA.
-6. Current learning focus.
-7. Horizon bridge.
-8. Contact and return-to-surface link.
+6. Horizon bridge.
+7. Contact and return-to-surface link.
 
 Separate views: About, Project Detail, Journal, Article Detail. The retired Projects index redirects to the Home project section. Each is reachable by a localized route. Preview content is explicitly labeled until real records are available.
 

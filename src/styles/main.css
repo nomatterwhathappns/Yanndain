@@ -102,10 +102,6 @@ h1 em, h2 em { color: #dbe8dd; }
 .journal-card-copy { padding: 30px 32px 35px; position: relative; }
 .journal-card h3 { font: 400 43px/1.1 var(--serif); margin-top: 18px; max-width: 330px; }
 .journal-card-copy>p { color: var(--muted); font-size: 12px; margin-top: 16px; line-height: 1.8; max-width: 310px; }
-.current-focus { padding-top: 80px; padding-bottom: 110px; min-height: 60svh; display: flex; align-items: center; }
-.focus-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 9%; width: 100%; align-items: center; border-top: 1px solid var(--line); padding-top: 60px; }
-.focus-layout h2 { font-size: clamp(56px,5.3vw,80px); }
-.focus-layout>p { font-size: 15px; color: #b0c6cb; line-height: 2; max-width: 380px; }
 .horizon { min-height: 110svh; }
 .contact-section { min-height: 90svh; display: flex; flex-direction: column; padding-top: 80px; }
 .contact-section:before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent,#04131f99); }
@@ -218,10 +214,6 @@ footer .text-link { font-size: 11px; border: 0; gap: 15px; color: #a7c1c4; }
   .journal-card-copy { padding: 25px; }
   .journal-card h3 { font-size: 39px; }
   .journal-card-copy>p { padding-right: 15px; }
-  .current-focus { padding-top: 80px; padding-bottom: 70px; min-height: 70svh; }
-  .focus-layout { grid-template-columns: 1fr; gap: 30px; padding-top: 45px; }
-  .focus-layout h2 { font-size: 58px; }
-  .focus-layout>p { font-size: 13px; line-height: 1.9; max-width: 340px; }
   .horizon { min-height: 100svh; }
   .contact-section { min-height: 80svh; padding-top: 50px; }
   .contact-copy { padding: 55px 0 80px; }
