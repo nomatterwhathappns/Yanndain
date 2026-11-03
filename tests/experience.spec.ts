@@ -57,9 +57,11 @@ test('section buttons open real pages, localized detail routes survive reload an
   await expect(page.locator('.featured-project-link')).toHaveCount(3);
 });
 
-test('vortex forms, dissolves, forms again on reverse scroll; horizon uses corridor', async ({ page }) => {
+test('vortex reverses with scrolling and the final contact section inherits the corridor effects', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto('/id');
-  await expect(page.locator('html')).toHaveAttribute('data-scene', 'ready');
+  // Software WebGL needs extra time to compile shaders on a fresh browser.
+  await expect(page.locator('html')).toHaveAttribute('data-scene', 'ready', { timeout: 60_000 });
   async function center(id: string) {
     await page.locator(`#${id}`).evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY + el.getBoundingClientRect().height / 2 - innerHeight / 2, behavior: 'instant' }));
   }
@@ -76,10 +78,26 @@ test('vortex forms, dissolves, forms again on reverse scroll; horizon uses corri
   await expect(page.locator('html')).toHaveAttribute('data-formation', 'free');
   await center('curiosity');
   await expect(page.locator('html')).toHaveAttribute('data-formation', 'vortex');
-  await center('horizon');
-  await expect(page.locator('html')).toHaveAttribute('data-formation', 'corridor');
+  await expect(page.locator('#horizon')).toHaveCount(0);
+  await expect(page.locator('#journal + #contact')).toHaveCount(1);
   await center('contact');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'corridor');
+  await expect(page.locator('#contact h2')).toBeInViewport();
+  await expect(page.locator('#contact .bridge-copy')).toHaveCSS('opacity', '1');
+  await page.evaluate(() => scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'corridor');
+  await expect(page.locator('#contact footer')).toBeInViewport();
+  await center('journal');
   await expect(page.locator('html')).toHaveAttribute('data-formation', 'free');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await center('contact');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'corridor');
+  await expect(page.locator('#contact h2')).toBeInViewport();
+  await expect(page.locator('#contact .bridge-copy')).toHaveCSS('opacity', '1');
+  await center('journal');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'free');
+  await center('contact');
+  await expect(page.locator('html')).toHaveAttribute('data-formation', 'corridor');
   await expect(page.locator('#ocean')).toHaveAttribute('data-fish-count', '900');
 });
 

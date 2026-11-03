@@ -37,8 +37,7 @@ Home flow:
 3. A scrollable Home project collection with direct detail links.
 4. Curiosity bridge.
 5. Large interactive learning map with an all-notes CTA.
-6. Horizon bridge.
-7. Contact and return-to-surface link.
+6. Contact with the corridor formation and return-to-surface link.
 
 Separate views: About, Project Detail, Journal, Article Detail. The retired Projects index redirects to the Home project section. Each is reachable by a localized route. Preview content is explicitly labeled until real records are available.
 
@@ -57,9 +56,9 @@ The curiosity quote keeps its own connected transition space:
 
 500 sardines converge into an organic vortex around the words and continue swimming along the ring. Nonparticipating fish continue in other layers. Continuing down dissolves the vortex into ordinary schooling before the next section.
 
-The horizon title is “Keep exploring.” It uses two continuous streams and a receding corridor. A manta moves toward the distant opening. Continuing down breaks the formation again on the way to Contact.
+The separate “Keep exploring.” section is removed. Its corridor effects now belong to “Let’s connect.”: two continuous fish streams, a receding corridor, a manta moving toward the distant opening, the central water glow, and the text fade/translation. Contact copy is vertically centered within its section, with the footer below. The formation reaches full strength at the bottom of the page on desktop and mobile; reversing back toward the journal dissolves it.
 
-Both follow native scroll: free swimming → gathering → formation → dispersal. Reverse scrolling reverses the formation stages. No scroll capture, mandatory waiting, or forced snapping is used.
+Both follow native scroll: free swimming → gathering → formation. The curiosity formation disperses when scrolling onward; the final contact formation stays active while the contact content is visible at the page end. Reverse scrolling reverses the formation stages. No scroll capture, mandatory waiting, or forced snapping is used.
 
 ## CV and content
 

@@ -35,7 +35,6 @@ export const copy = {
   journalIntro: words('Pertanyaan, proses, dan penemuan kecil. Tempat untuk merangkai apa yang dipelajari, satu catatan pada satu waktu.', 'Questions, process, and little discoveries. A place to piece together what was learned, one note at a time.'),
   allNotes: words('Buka semua catatan', 'Enter the journal'),
   focusText: words('Fokus saat ini adalah security engineering, terutama memahami cara mengamankan sistem dan mengurangi risiko dari serangan yang sebelumnya dipelajari.', 'The current focus is security engineering, particularly understanding how to secure systems and reduce the risks posed by previously studied attacks.'),
-  horizonFirst: 'Keep', horizonSecond: 'exploring.',
   contactFirst: 'Let’s', contactSecond: 'connect.',
   contactText: words('Ruang untuk percakapan berikutnya.', 'A space for the next conversation.'),
   contactPending: words('Email dan tautan sosial akan ditambahkan.', 'Email and social links will be added.'),

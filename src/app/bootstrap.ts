@@ -106,9 +106,8 @@ function home() {
       ${learningMap(language)}
       <div class="journal-map-footer"><p class="journal-map-hint"><span class="map-mouse-hint">${t(journalMapCopy.hint)}</span><span class="map-touch-hint">${t(journalMapCopy.touchHint)}</span></p>${routeLink('/journal', t(copy.allNotes), 'button button-ocean')}</div>
     </section>
-    <section class="bridge horizon section" id="horizon" data-formation="corridor"><div class="bridge-copy">${heading(copy.horizonFirst, copy.horizonSecond)}</div></section>
-    <section class="contact-section section" id="contact">
-      <div class="contact-copy reveal">${heading(copy.contactFirst, copy.contactSecond)}<p>${t(copy.contactText)}</p>
+    <section class="contact-section section" id="contact" data-formation="corridor">
+      <div class="contact-copy bridge-copy">${heading(copy.contactFirst, copy.contactSecond)}<p>${t(copy.contactText)}</p>
       <div class="contact-links">${contactLinks()}</div></div>${footer()}
     </section>`;
 }
@@ -316,7 +315,7 @@ function updateScene() {
   const tornado = isHome ? formation('about') : { amount: 0, phase: 0, y: 0 };
   const tornadoSpace = isHome ? document.querySelector('.about-space')?.getBoundingClientRect() : undefined;
   const tornadoY = tornadoSpace ? 1 - (tornadoSpace.top + tornadoSpace.height / 2) / innerHeight * 2 : 0;
-  const corridor = isHome ? formation('horizon') : { amount: 0, phase: 0, y: 0 };
+  const corridor = isHome ? formation('contact') : { amount: 0, phase: 0, y: 0 };
   const state: OceanState = { depth, tornado: tornado.amount, tornadoY, vortex: vortex.amount, vortexPhase: vortex.phase, vortexY: vortex.y, corridor: corridor.amount, corridorPhase: corridor.phase, corridorY: corridor.y, reading: !isHome };
   ocean?.setState(state);
   document.documentElement.style.setProperty('--depth', String(depth));

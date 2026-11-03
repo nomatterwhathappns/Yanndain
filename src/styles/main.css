@@ -102,10 +102,9 @@ h1 em, h2 em { color: #dbe8dd; }
 .journal-card-copy { padding: 30px 32px 35px; position: relative; }
 .journal-card h3 { font: 400 43px/1.1 var(--serif); margin-top: 18px; max-width: 330px; }
 .journal-card-copy>p { color: var(--muted); font-size: 12px; margin-top: 16px; line-height: 1.8; max-width: 310px; }
-.horizon { min-height: 110svh; }
 .contact-section { min-height: 90svh; display: flex; flex-direction: column; padding-top: 80px; }
 .contact-section:before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent,#04131f99); }
-.contact-copy { text-align: center; flex: 1; padding: 45px 0 105px; }
+.contact-copy { text-align: center; flex: 1; padding: 45px 0 105px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .contact-copy h2 { font-size: clamp(65px,8vw,115px); }
 .contact-copy>p { margin-top: 24px; color: #b9c9c8; font-size: 14px; }
 .contact-links { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
@@ -214,7 +213,6 @@ footer .text-link { font-size: 11px; border: 0; gap: 15px; color: #a7c1c4; }
   .journal-card-copy { padding: 25px; }
   .journal-card h3 { font-size: 39px; }
   .journal-card-copy>p { padding-right: 15px; }
-  .horizon { min-height: 100svh; }
   .contact-section { min-height: 80svh; padding-top: 50px; }
   .contact-copy { padding: 55px 0 80px; }
   .contact-copy h2 { font-size: clamp(57px,12vw,80px); }
