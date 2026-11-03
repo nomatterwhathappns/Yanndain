@@ -26,6 +26,8 @@ src/
 ├── journal/
 │   ├── map.ts              # Peta SVG, hover, fokus keyboard dan tap
 │   └── route-motion.ts     # Ikan penunjuk jalur dan kontrol jeda
+├── interactions/
+│   └── water-feedback.ts   # Cahaya pointer dan riak klik/tap
 ├── ocean/
 │   ├── scene.ts            # Scene, kamera, cahaya, schooling dan formasi
 │   ├── fish-models.ts      # Geometri ikan, manta dan hiu
@@ -33,7 +35,8 @@ src/
 │   └── swimming.ts         # Jalur berenang dan distribusi ikan
 ├── styles/
 │   ├── main.css            # Layout, komponen dan responsivitas
-│   └── journal-map.css     # Kontur laut, jalur dan titik interaktif
+│   ├── journal-map.css     # Kontur laut, jalur dan titik interaktif
+│   └── water-feedback.css  # Respons cahaya pada tombol dan kartu
 └── vite-env.d.ts
 public/                     # Aset statis
 tests/                      # Pengujian browser

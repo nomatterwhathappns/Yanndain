@@ -13,6 +13,8 @@ function routeChart(mobile: boolean) {
     <path class="map-route-branch" d="${mobile ? 'M126 120C50 198 72 242 164 244L246 244Q292 244 292 290M456 648C535 578 530 452 428 438S300 424 212 386' : 'M96 490C30 288 110 117 244 106Q294 108 336 168M564 532C732 640 980 600 1092 448M585 316C534 264 574 120 686 123L786 123Q826 122 864 147'}"/>
     <path class="map-route-halo" d="${path}"/>
     <path class="map-route-line" d="${path}"/>
+    <path class="map-route-selection" d="${path}" pathLength="100"/>
+    <circle class="map-route-destination" r="7"/>
     <g class="map-traveler">
       <ellipse class="map-fish-glow" cx="-3" cy="0" rx="28" ry="15"/>
       <path class="map-fish-fin" d="M-2-5-9-13-8-3M-2 5-9 13-8 3"/>
@@ -53,7 +55,7 @@ export function learningMap(language: Language) {
     ${routeChart(false)}${routeChart(true)}
     <ol class="map-stops">${journalStops.map((stop, i) => `<li class="map-stop${i === 1 || i === 3 ? ' note-below' : ''}${i === 0 ? ' mobile-note-below' : ''}${stop.mobileX > 50 ? ' mobile-stop-right' : ''}" style="--stop-x:${stop.x}%;--stop-y:${stop.y}%;--mobile-x:${stop.mobileX}%;--mobile-y:${stop.mobileY}%">
       <button type="button" class="map-node" data-map-node="${stop.id}" aria-expanded="false" aria-controls="map-note-${stop.id}"><span class="map-node-dot" aria-hidden="true"></span><span class="map-node-name" lang="en">${escape(stop.title)}</span></button>
-      <div class="map-note" id="map-note-${stop.id}" role="region" aria-labelledby="map-title-${stop.id}" hidden><span class="map-note-status">${t(journalMapCopy.preview)}</span><h3 id="map-title-${stop.id}" lang="en">${escape(stop.title)}</h3><p>${t(stop.description)}</p></div>
+      <div class="map-note" id="map-note-${stop.id}" role="region" aria-labelledby="map-title-${stop.id}" hidden><button type="button" class="map-note-close" aria-label="${t(journalMapCopy.close)}"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" stroke-width="1.2"/></svg></button><span class="map-note-status">${t(journalMapCopy.preview)}</span><h3 id="map-title-${stop.id}" lang="en">${escape(stop.title)}</h3><p>${t(stop.description)}</p></div>
     </li>`).join('')}</ol>
   </div>`;
 }
@@ -64,9 +66,19 @@ export function mountLearningMap(root: HTMLElement | null) {
   const { signal } = controller;
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-map-node]')];
   const traveler = mountRouteTraveler(root);
+  let active: HTMLButtonElement | null = null;
   let pinned: HTMLButtonElement | null = null;
-  const show = (button: HTMLButtonElement | null) => {
+  let mode: 'hover' | 'keyboard' | 'touch' = 'keyboard';
+  let input = 'keyboard';
+  let closeTimer = 0;
+  const cancelClose = () => { clearTimeout(closeTimer); closeTimer = 0; };
+  const show = (button: HTMLButtonElement | null, nextMode = mode) => {
+    cancelClose();
+    active = button;
+    mode = nextMode;
+    if (!button) pinned = null;
     traveler.setPaused(button !== null);
+    traveler.highlightStop(button ? buttons.indexOf(button) : null);
     for (const item of buttons) {
       const active = item === button;
       item.setAttribute('aria-expanded', String(active));
@@ -74,27 +86,57 @@ export function mountLearningMap(root: HTMLElement | null) {
       root.querySelector<HTMLElement>(`#${item.getAttribute('aria-controls')}`)!.hidden = !active;
     }
   };
+  const closeSoon = () => {
+    if (mode !== 'hover') return;
+    cancelClose();
+    // A short bridge lets the cursor reach the note without leaving it stuck open.
+    closeTimer = window.setTimeout(() => show(null), 180);
+  };
+  document.addEventListener('pointerdown', event => { input = event.pointerType; }, { signal, capture: true });
+  document.addEventListener('keydown', () => { input = 'keyboard'; }, { signal, capture: true });
   for (const button of buttons) {
+    const note = root.querySelector<HTMLElement>(`#${button.getAttribute('aria-controls')}`)!;
     button.addEventListener('pointerenter', event => {
-      if (event.pointerType === 'mouse') { pinned = null; show(button); }
+      if (event.pointerType === 'mouse') { pinned = null; show(button, 'hover'); }
     }, { signal });
-    button.addEventListener('focus', () => show(button), { signal });
-    button.addEventListener('click', () => {
+    button.addEventListener('pointerleave', closeSoon, { signal });
+    note.addEventListener('pointerenter', cancelClose, { signal });
+    note.addEventListener('pointerleave', closeSoon, { signal });
+    button.addEventListener('focus', () => {
+      if (input !== 'touch') show(button, input === 'keyboard' ? 'keyboard' : 'hover');
+    }, { signal });
+    button.addEventListener('click', event => {
+      // Mouse clicks never pin a tooltip just because the button received focus.
+      if (event.detail !== 0 && input !== 'touch') { pinned = null; show(button, 'hover'); return; }
       pinned = pinned === button ? null : button;
-      show(pinned);
+      show(pinned, input === 'touch' ? 'touch' : 'keyboard');
+    }, { signal });
+    button.addEventListener('keydown', event => {
+      const index = buttons.indexOf(button);
+      const next = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? (index + 1) % buttons.length
+        : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? (index + buttons.length - 1) % buttons.length
+        : event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : null;
+      if (next !== null) { event.preventDefault(); pinned = null; buttons[next].focus(); }
+    }, { signal });
+    note.querySelector('button')!.addEventListener('click', () => {
+      button.focus({ preventScroll: true });
+      show(null);
     }, { signal });
   }
-  root.addEventListener('pointerleave', () => {
-    if (!pinned && !root.contains(document.activeElement)) show(null);
-  }, { signal });
+  root.addEventListener('pointerleave', closeSoon, { signal });
   root.addEventListener('focusout', event => {
-    if (!root.contains(event.relatedTarget as Node | null)) { pinned = null; show(null); }
+    if (mode !== 'hover' && !active?.closest('.map-stop')?.contains(event.relatedTarget as Node | null)) show(null);
+  }, { signal });
+  root.addEventListener('click', event => {
+    if ((event.target as Element).closest('.map-node, .map-note')) return;
+    show(null);
+    traveler.guideTo(event.clientX, event.clientY);
   }, { signal });
   document.addEventListener('click', event => {
-    if (!root.contains(event.target as Node)) { pinned = null; show(null); }
+    if (!root.contains(event.target as Node)) show(null);
   }, { signal });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') { pinned = null; show(null); }
+    if (event.key === 'Escape') show(null);
   }, { signal });
-  return () => { controller.abort(); traveler.dispose(); };
+  return () => { cancelClose(); controller.abort(); traveler.dispose(); };
 }

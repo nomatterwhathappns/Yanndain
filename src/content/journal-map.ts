@@ -16,8 +16,9 @@ export const journalStops = [
 
 export const journalMapCopy = {
   intro: words('Sebuah peta untuk catatan belajar. Jelajahi titiknya untuk melihat topik yang akan didokumentasikan.', 'A map for learning notes. Explore the stops to discover the topics to be documented.'),
-  hint: words('Sorot atau pilih titik untuk menjelajah.', 'Hover over or select a stop to explore.'),
-  touchHint: words('Ketuk titik untuk melihat ceritanya.', 'Tap a stop to see its story.'),
+  hint: words('Sorot titik untuk membaca. Klik jalur untuk mengarahkan ikan.', 'Hover over a stop to read. Click the route to guide the fish.'),
+  touchHint: words('Ketuk titik untuk membaca, atau jalur untuk mengarahkan ikan.', 'Tap a stop to read, or the route to guide the fish.'),
   label: words('Peta topik catatan belajar', 'Learning notes topic map'),
   preview: words('Pratinjau topik', 'Topic preview'),
+  close: words('Tutup penjelasan', 'Close description'),
 };

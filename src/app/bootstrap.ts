@@ -8,6 +8,7 @@ import { article, copy, local, profile, projects, words, type Language, type Loc
 import type { OceanControls, OceanState } from '../ocean/scene';
 import { learningMap, mountLearningMap } from '../journal/map';
 import { journalMapCopy } from '../content/journal-map';
+import { mountWaterFeedback } from '../interactions/water-feedback';
 
 const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const $$ = <T extends Element = HTMLElement>(selector: string) => [...document.querySelectorAll<T>(selector)];
@@ -28,6 +29,7 @@ let savedHomeScroll = 0;
 let navigationToken = 0;
 const main = $('#content');
 const menu = $<HTMLDialogElement>('#site-menu');
+const disposeWaterFeedback = mountWaterFeedback($('.ocean-world'));
 const t = (value: Localized) => local(value, language);
 const escape = (text: string) => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 function href(path: string, lang = language) { return `${portable ? '#' : ''}/${lang}${path === '/' ? '' : path}`; }
@@ -346,4 +348,4 @@ import('../ocean/scene').then(({ mountOcean }) => {
   document.documentElement.dataset.scene = 'fallback';
   console.warn('The 3D ocean is unavailable; the readable static experience is active.', error instanceof Error ? error.message : '');
 });
-if (import.meta.hot) import.meta.hot.dispose(() => { ocean?.dispose(); revealObserver?.disconnect(); disposeLearningMap?.(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { ocean?.dispose(); revealObserver?.disconnect(); disposeLearningMap?.(); disposeWaterFeedback(); });

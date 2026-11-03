@@ -1,0 +1,15 @@
+.water-feedback, .water-ripples { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.water-presence { position: absolute; top: 0; left: 0; width: 440px; height: 440px; border-radius: 50%; background: radial-gradient(circle, #abdaca18, #76c8cc08 35%, transparent 68%); opacity: 0; transition: opacity .45s; }
+.is-pointer-present .water-presence { opacity: 1; }
+[data-page]:not([data-page=home]) .is-pointer-present .water-presence { opacity: .35; }
+.water-ring { position: absolute; width: 100px; height: 100px; border-radius: 50%; border: 1px solid #c0e8dc99; box-shadow: 0 0 0 9px #b1ded512, inset 0 0 18px #b1ded519; }
+.button, .journal-card, .menu-links > a { position: relative; isolation: isolate; }
+.button::after, .featured-project-link::after, .journal-card::after, .menu-links > a::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(circle 170px at var(--water-x, 50%) var(--water-y, 50%), #b0e3d02b, transparent 75%);
+  opacity: 0; transition: opacity .3s;
+}
+.water-hover::after, .button:focus-visible::after, .featured-project-link:focus-visible::after, .journal-card:focus-visible::after, .menu-links > a:focus-visible::after { opacity: 1; }
+.button:active { transform: translateY(1px); }
+@media (prefers-reduced-motion: reduce) { .water-feedback { display: none; } }
+.reduced-motion .water-feedback { display: none; }
