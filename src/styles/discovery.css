@@ -1,0 +1,28 @@
+.discovery-cue { position: fixed; z-index: 31; left: max(18px, env(safe-area-inset-left)); bottom: max(18px, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 12px; max-width: min(430px, calc(100vw - 36px)); padding: 11px 10px 11px 16px; border: 1px solid #accdc73d; border-radius: 12px; background: #0a2735ed; box-shadow: 0 10px 36px #00131b55; pointer-events: none; }
+.discovery-cue p { font-size: 12px; line-height: 1.7; color: #d0e2df; }
+.discovery-cue button { width: 36px; height: 36px; flex: 0 0 36px; background: transparent; border-radius: 50%; font-size: 20px; color: #aec9ca; pointer-events: auto; }
+.discovery-cue button:hover { background: #b9dfd514; }
+.discovery-light { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: #d3ead6; box-shadow: 0 0 14px #b4e4d488; }
+.discovery-target.map-node .map-node-dot { box-shadow: 0 0 0 1px #d3ead6, 0 0 0 12px #b9dfd51f; }
+.interaction-help { margin-bottom: 24px; font-size: 13px; color: #c3d8d6; }
+.interaction-help summary { padding: 14px 0; cursor: pointer; list-style-position: inside; }
+.interaction-help p { font-size: 12px; line-height: 1.8; margin: 0 0 15px; color: #a9c5c9; }
+.interaction-help ul { padding-left: 18px; margin: 0; }
+.interaction-help li { line-height: 1.8; margin-bottom: 10px; }
+.interaction-help .text-link { background: transparent; margin-top: 8px; }
+.reduced-motion .water-help, html:not([data-scene=ready]) .water-help { display: none; }
+.menu-experience { padding: 0 0 22px; }
+.explore-launch { width: 100%; text-align: left; display: block; }
+.explore-launch span { display: block; }
+.explore-launch small { display: block; margin-top: 9px; line-height: 1.6; color: #afc9cc; font-size: 11px; font-weight: 400; }
+@media (prefers-reduced-motion: no-preference) {
+  .discovery-cue:not([hidden]) { animation: hint-appear .3s ease both; }
+  .discovery-target.map-node .map-node-dot { animation: hint-pulse 1.8s ease-in-out 3; }
+  .discovery-target:not(.map-node) { animation: hint-control 1.8s ease-in-out 3; }
+  @keyframes hint-pulse { 50% { box-shadow: 0 0 0 1px #d3ead6, 0 0 0 18px #b9dfd508, 0 0 24px #b9dfd555; } }
+  @keyframes hint-control { 50% { color: #f4ffed; background: #a5d3c321; } }
+  @keyframes hint-appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+@media (max-width: 760px) {
+  .discovery-cue { bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; max-width: calc(100vw - 24px); padding-left: 12px; }
+}

@@ -22,19 +22,27 @@ src/
 │   └── bootstrap.ts        # Halaman, routing, menu, bahasa, integrasi scene
 ├── content/
 │   ├── index.ts            # Profil, terjemahan, data proyek dan jurnal
+│   ├── interactions.ts     # Teks petunjuk ID/EN dan nama interaksi
 │   └── journal-map.ts      # Topik dan posisi titik peta belajar
 ├── journal/
 │   ├── map.ts              # Peta SVG, hover, fokus keyboard dan tap
 │   └── route-motion.ts     # Ikan penunjuk jalur dan kontrol jeda
 ├── interactions/
+│   ├── discovery.ts        # Petunjuk kontekstual dan memori sesi
+│   ├── explorer.ts         # Mode jelajah laut, drag/touch/keyboard
+│   ├── ocean-input.ts      # Input laut tanpa mengganggu kontrol konten
+│   ├── project-preview.ts  # Pratinjau proyek dan posisi koleksi
 │   └── water-feedback.ts   # Cahaya pointer dan riak klik/tap
 ├── ocean/
 │   ├── scene.ts            # Scene, kamera, cahaya, schooling dan formasi
+│   ├── interaction-field.ts # Respons lokal pointer dan gelombang
 │   ├── fish-models.ts      # Geometri ikan, manta dan hiu
 │   ├── tornado.ts          # Jalur spiral vertikal untuk section About
 │   └── swimming.ts         # Jalur berenang dan distribusi ikan
 ├── styles/
 │   ├── main.css            # Layout, komponen dan responsivitas
+│   ├── discovery.css       # Petunjuk kecil dan panduan di menu
+│   ├── explorer.css        # Antarmuka mode jelajah laut
 │   ├── journal-map.css     # Kontur laut, jalur dan titik interaktif
 │   └── water-feedback.css  # Respons cahaya pada tombol dan kartu
 └── vite-env.d.ts
@@ -73,9 +81,11 @@ Buka `yanndain-preview.html` atau `yanndain-ocean-v4.html` yang dihasilkan di ro
 ```sh
 npm run build:preview
 npm run test:e2e
-node --experimental-strip-types --test tests/tornado.test.ts
+node --experimental-strip-types --test tests/tornado.test.ts tests/interaction-field.test.ts
 ```
 
 Suite menggunakan Chromium di `/usr/bin/chromium`, atau lokasi executable dari variabel `CHROMIUM_PATH`. Pengujian mencakup navigasi, bahasa, mobile, formasi, gerakan ikan tanpa scroll, WebGL fallback, dan HTML portable. Software rendering bukan ukuran performa GPU pengguna.
+
+Menu menyediakan **Petunjuk interaksi** untuk melihat cara memakai peta, pratinjau proyek dan laut, serta mengulang petunjuk kecil. **Explore the ocean** membuka mode jelajah opsional dengan drag, tap dan keyboard; tombol kembali atau Escape mengembalikan posisi bacaan. Petunjuk yang sudah dipakai diingat selama sesi browser, dengan fallback ketika penyimpanan dibatasi.
 
 Scene berisi 900 ikan: 700 sardine, 120 jack, 50 reef, 24 lanternfish, 2 manta dan 4 hiu. Reduced motion menghentikan animasi berkelanjutan; pengguna dapat mengaktifkannya melalui menu.

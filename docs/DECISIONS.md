@@ -49,6 +49,20 @@ The chart route mixes long turns, rounded corners, loops, and faint alternate br
 
 Clicking or tapping near the main chart route guides the fish forward to that position before ordinary swimming resumes. With reduced motion it moves directly to the selected position without an animation. Across the website, a soft light follows mouse movement over the water, buttons and project/journal/menu links. Clicks and taps create brief water ripples behind content; keyboard focus retains visible feedback. These effects do not move hit targets or intercept scrolling, stop with reduced motion, and dispose their listeners and animations cleanly. Reading pages use a dimmer light.
 
+## Interaction and discovery
+
+Open water responds to pointer proximity and speed. Faster gestures create a stronger local opening, and clicks/taps send an expanding wave through nearby fish. Fish return to their ordinary routes as the influence fades. Small fish also yield locally to the six manta/shark bodies. Pointer and wave responses work inside formations, with horizontal-only displacement in the upward tornado. Headings, paragraphs, links, forms, the project collection and the chart keep their ordinary input behavior. The population stays at 900.
+
+An optional “Explore the ocean” action in the menu opens the same ocean without portfolio copy. Dragging or arrow keys adjust a bounded view; a tap/click or Space sends a wave. Reset view, a visible return button and Escape are available. The native dialog contains keyboard focus, and closing restores the original scroll position and menu-button focus. Drag capture is restricted to this explicitly opened mode. Reduced motion permits direct view changes while keeping autonomous movement and waves still. The entry is hidden if WebGL is unavailable.
+
+Projects keep their direct detail links and add an explicit “Lihat isi” / “Peek inside” disclosure. One preview opens at a time, using the existing project-specific preview content. Returning from a detail page restores the expanded item and the inner collection's scroll position. No project outcomes, demos or accomplishments are invented. Interactive lab diagrams and tool demos can be added when real supporting content exists.
+
+The map adds labeled topic-highlighting controls and an “Arahkan ikan” / “Guide the fish” button. That button makes the route interaction available to keyboard users as well as pointer/touch users. Topic emphasis does not imply completed milestones or published notes. Hover notes still close locally after 180ms.
+
+Contextual hints explain the less obvious actions. One small, dismissible cue appears after its area enters view, with a brief pulse on the relevant control where appropriate. Instructions adapt to mouse, touch and keyboard, localize to ID/EN, and disappear once the action is used. Unused automatic cues expire after nine seconds and are not repeatedly shown in the same mounted session; discovery memory uses optional session storage. Motion-only hints are suppressed for reduced motion and unavailable WebGL. Hints never capture focus or scrolling, and pulse animations stop with reduced motion. The menu keeps an interaction guide and a “Show hints again” action available. Obvious labeled links and language buttons do not need extra prompts.
+
+Page changes use a short content fade/translation while keeping the existing Three.js scene. Navigation is immediate and remains functional during the transition. Reduced motion removes the transition.
+
 The curiosity quote keeps its own connected transition space:
 
 > Learn.<br>

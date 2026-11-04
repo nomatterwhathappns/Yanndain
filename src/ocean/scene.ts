@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { makeFishGeometry, makeMantaGeometry, type FishSpecies } from './fish-models';
 import { sampleSwimPosition } from './swimming';
 import { sampleTornado, TORNADO_COUNT, tornadoTravel, tornadoVisibility } from './tornado';
+import { sampleWaterResponse, type WaterImpulse } from './interaction-field';
 
 export const FISH_COUNTS = Object.freeze({ sardine: 700, jack: 120, reef: 50, lantern: 24, manta: 2, large: 4 });
 export const FISH_TOTAL = Object.values(FISH_COUNTS).reduce((sum, value) => sum + value, 0);
@@ -14,7 +15,10 @@ export interface OceanState {
 }
 export interface OceanControls {
   setState(state: OceanState): void;
-  setPointer(x: number, y: number): void;
+  setPointer(x: number, y: number, speed?: number): void;
+  clearPointer(): void;
+  ripple(x: number, y: number): void;
+  setView(x: number, y: number): void;
   setReducedMotion(value: boolean): void;
   dispose(): void;
 }
@@ -51,6 +55,13 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   let previous = performance.now();
   let pointer = new THREE.Vector2();
   let smoothPointer = new THREE.Vector2();
+  let pointerStrength = 0;
+  let smoothStrength = 0;
+  let pointerSpeed = 0;
+  let smoothSpeed = 0;
+  const view = new THREE.Vector2();
+  const smoothView = new THREE.Vector2();
+  const impulses: WaterImpulse[] = [];
   let frameSamples = 0;
   let frameTime = 0;
   let narrow = isMobile;
@@ -260,6 +271,13 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   const up = new THREE.Vector3();
   const orientation = new THREE.Matrix4();
   const cameraOffset = new THREE.Vector3();
+  const cameraRight = new THREE.Vector3();
+  const cameraUp = new THREE.Vector3();
+  const displacement = { x: 0, y: 0 };
+  const waterPointer = { x: 0, y: 0, strength: 0, speed: 0 };
+  const largeFish = allFish.filter(fish => fish.species === 'manta' || fish.species === 'large');
+  const largePositions = largeFish.map(() => new THREE.Vector3());
+  const clearance = new THREE.Vector3();
   function samplePosition(fish: Fish, atTime: number, output: THREE.Vector3) {
     sampleSwimPosition(fish, atTime, { narrow, depth: smooth.depth }, output);
     if (smooth.tornado > .001 && fish.species === 'sardine' && fish.index < TORNADO_COUNT) {
@@ -329,6 +347,26 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     }
   }
   function gridKey(x: number, y: number, z: number) { return `${Math.floor(x / .7)},${Math.floor(y / .7)},${Math.floor(z / .7)}`; }
+  function applyWaterResponse(fish: Fish, point: THREE.Vector3) {
+    if (reduced || fish.species === 'manta' || fish.species === 'large') return;
+    const spiral = fish.species === 'sardine' && fish.index < TORNADO_COUNT && smooth.tornado > .5;
+    cameraOffset.copy(point).project(camera);
+    sampleWaterResponse(cameraOffset.x, cameraOffset.y, camera.aspect, time, waterPointer, impulses, spiral, displacement);
+    const gain = smooth.reading ? .18 : 1;
+    point.addScaledVector(cameraRight, displacement.x * gain);
+    if (!spiral) point.addScaledVector(cameraUp, displacement.y * gain);
+    // Six large animals form moving, local clearances; no all-pairs flock scan.
+    for (let i = 0; i < largePositions.length; i++) {
+      clearance.copy(point).sub(largePositions[i]);
+      const radius = largeFish[i].species === 'manta' ? 3.8 : 2.8;
+      const distance = clearance.length();
+      if (distance > .01 && distance < radius) {
+        const amount = Math.pow(1 - distance / radius, 2) * .85;
+        if (spiral) clearance.y = 0;
+        point.addScaledVector(clearance.normalize(), amount);
+      }
+    }
+  }
   function updateFish(delta: number, snap: boolean) {
     // Local separation in a spatial hash avoids all-pairs checks. The school
     // flow supplies alignment/cohesion; formations blend those targets smoothly.
@@ -340,6 +378,7 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
       if (cell) cell.push(fish); else grid.set(key, [fish]);
     }
     const follow = snap ? 1 : 1 - Math.exp(-delta * 3.8);
+    for (let i = 0; i < largeFish.length; i++) samplePosition(largeFish[i], time, largePositions[i]);
     for (const population of populations) {
       for (let i = 0; i < population.fish.length; i++) {
         const fish = population.fish[i];
@@ -350,20 +389,11 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
         const visibility = inTornado ? 1 - smooth.tornado * (1 - tornadoVisibility(fish.index, time)) : 1;
         population.mesh.geometry.getAttribute('aVisibility').setX(i, visibility);
         samplePosition(fish, time, free);
+        applyWaterResponse(fish, free);
         const crossesTop = inTornado && smooth.tornado > .5 && Math.floor(tornadoTravel(fish.index, time + .04)) !== lap;
         samplePosition(fish, time + (crossesTop ? -.04 : .04), ahead);
+        applyWaterResponse(fish, ahead);
         direction.copy(crossesTop ? free : ahead).sub(crossesTop ? ahead : free).normalize();
-        if (!reduced && fish.species !== 'large') {
-          cameraOffset.copy(free).project(camera);
-          const dx = cameraOffset.x - smoothPointer.x;
-          const dy = cameraOffset.y + smoothPointer.y;
-          const distance = dx * dx + dy * dy;
-          if (distance < .05 && smoothPointer.lengthSq() > .001 && smooth.tornado < .8 && smooth.vortex < .8 && smooth.corridor < .8) {
-            const strength = (.05 - distance) * 16;
-            free.x += dx * strength * 5;
-            free.y += dy * strength * 5;
-          }
-        }
         if (!snap && fish.initialized && !(inTornado && smooth.tornado > .8) && fish.species !== 'manta' && fish.species !== 'large') {
           const neighbors = grid.get(gridKey(fish.position.x, fish.position.y, fish.position.z));
           avoidance.set(0, 0, 0);
@@ -413,10 +443,20 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
     if (!snap) for (const key of ['depth', 'tornado', 'tornadoY', 'vortex', 'vortexPhase', 'vortexY', 'corridor', 'corridorPhase', 'corridorY'] as const) smooth[key] += (state[key] - smooth[key]) * amount;
     smooth.reading = state.reading;
     smoothPointer.lerp(pointer, amount);
+    smoothStrength += (pointerStrength - smoothStrength) * amount;
+    smoothSpeed += (pointerSpeed - smoothSpeed) * amount;
+    pointerSpeed *= Math.exp(-delta * 3);
+    smoothView.lerp(view, snap ? 1 : amount);
+    waterPointer.x = smoothPointer.x; waterPointer.y = smoothPointer.y;
+    waterPointer.strength = smoothStrength; waterPointer.speed = smoothSpeed;
+    while (impulses.length && time - impulses[0].time > 3) impulses.shift();
     const depth = smooth.depth;
-    camera.position.set(smoothPointer.x * .18, -depth * 4 - smoothPointer.y * .1, 10 - depth * 2.3);
-    camera.lookAt(smoothPointer.x * .35, -depth * 4 - .15, -15);
+    const presence = reduced ? 0 : 1;
+    camera.position.set(smoothPointer.x * (.18 + smooth.corridor * .16) * presence + smoothView.x * 2, -depth * 4 - smoothPointer.y * .1 * presence + smoothView.y * 1.4, 10 - depth * 2.3);
+    camera.lookAt(smoothPointer.x * .35 * presence + smoothView.x * 5, -depth * 4 - .15 + smoothView.y * 3, -15);
     camera.updateMatrixWorld();
+    cameraRight.setFromMatrixColumn(camera.matrixWorld, 0);
+    cameraUp.setFromMatrixColumn(camera.matrixWorld, 1);
     clockUniform.value = time;
     waterUniforms.uDepth.value = depth;
     waterUniforms.uPointer.value.copy(smoothPointer);
@@ -486,10 +526,17 @@ export function mountOcean(canvas: HTMLCanvasElement): OceanControls {
   resize(); resume();
   return {
     setState(value) { state = { ...value }; if (reduced) render(0, true); },
-    setPointer(x, y) { pointer.set(clamp(x, -1, 1), clamp(y, -1, 1)); },
+    setPointer(x, y, speed = 0) { pointer.set(clamp(x, -1, 1), clamp(y, -1, 1)); pointerStrength = 1; pointerSpeed = clamp(speed, 0, 1); },
+    clearPointer() { pointerStrength = 0; pointerSpeed = 0; pointer.set(0, 0); },
+    ripple(x, y) {
+      if (reduced) return;
+      if (impulses.length >= 3) impulses.shift();
+      impulses.push({ x: clamp(x, -1, 1), y: clamp(y, -1, 1), time });
+    },
+    setView(x, y) { view.set(clamp(x, -1, 1), clamp(y, -1, 1)); if (reduced) render(0, true); },
     setReducedMotion(value) {
       reduced = value;
-      if (value) { cancelAnimationFrame(frame); frame = 0; pointer.set(0, 0); smoothPointer.set(0, 0); render(0, true); }
+      if (value) { cancelAnimationFrame(frame); frame = 0; pointer.set(0, 0); smoothPointer.set(0, 0); pointerStrength = 0; smoothStrength = 0; impulses.length = 0; render(0, true); }
       else resume();
     },
     dispose() {

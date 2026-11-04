@@ -100,17 +100,31 @@ export function mountRouteTraveler(root: HTMLElement) {
   const sizeObserver = new ResizeObserver(resize);
   sizeObserver.observe(root);
   resize();
+  function guideToProgress(next: number) {
+    destination = Math.max(.025, Math.min(.975, next));
+    if (motionReduced()) { progress = destination; destination = null; }
+    root.classList.toggle('is-route-guiding', destination !== null);
+    draw(); update();
+  }
   return {
     highlightStop,
     guideTo(clientX: number, clientY: number) {
       const route = routes[narrow.matches ? 1 : 0];
       const bounds = route.svg.getBoundingClientRect();
       const target = nearest(route, clientX - bounds.left, clientY - bounds.top);
-      if (target.distance > 32) return;
-      destination = Math.max(.025, Math.min(.975, target.progress));
-      if (motionReduced()) { progress = destination; destination = null; }
-      root.classList.toggle('is-route-guiding', destination !== null);
-      draw(); update();
+      if (target.distance > 32) return false;
+      guideToProgress(target.progress);
+      return true;
+    },
+    guideNext() {
+      const route = routes[narrow.matches ? 1 : 0];
+      const positions = stops.map(stop => {
+        const style = stop.style;
+        const x = parseFloat(style.getPropertyValue(narrow.matches ? '--mobile-x' : '--stop-x')) / 100 * route.svg.viewBox.baseVal.width * route.scaleX;
+        const y = parseFloat(style.getPropertyValue(narrow.matches ? '--mobile-y' : '--stop-y')) / 100 * route.svg.viewBox.baseVal.height * route.scaleY;
+        return nearest(route, x, y).progress;
+      });
+      guideToProgress(positions.find(point => point > (destination ?? progress) + .025) ?? positions[0]);
     },
     setPaused(value: boolean) { paused = value; update(); },
     dispose() { disposed = true; cancelAnimationFrame(frame); controller.abort(); observer.disconnect(); motionObserver.disconnect(); sizeObserver.disconnect(); },

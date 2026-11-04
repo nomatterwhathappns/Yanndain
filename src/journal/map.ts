@@ -1,6 +1,7 @@
 import { local, type Language } from '../content';
 import { journalMapCopy, journalStops } from '../content/journal-map';
 import { mountRouteTraveler } from './route-motion';
+import { interactionCopy, discoverFeature } from '../content/interactions';
 import '../styles/journal-map.css';
 
 const escape = (text: string) => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
@@ -28,7 +29,10 @@ function routeChart(mobile: boolean) {
 
 export function learningMap(language: Language) {
   const t = (value: Parameters<typeof local>[0]) => escape(local(value, language));
-  return `<div class="learning-map" role="group" aria-label="${t(journalMapCopy.label)}">
+  return `<div class="map-toolbar">
+    <div class="map-topic-controls" role="group" aria-label="${t(interactionCopy.mapTopics)}"><span>${t(interactionCopy.mapTopics)}</span>${[['all', 'All topics'], ['foundations', 'Foundations'], ['offensive', 'Offensive'], ['defensive', 'Defensive']].map(([id, name]) => `<button type="button" data-map-filter="${id}" aria-pressed="${id === 'all'}" lang="en">${name}</button>`).join('')}</div>
+    <button type="button" class="map-guide-next text-link">${t(interactionCopy.mapGuide)}</button>
+    </div><div class="learning-map" role="group" aria-label="${t(journalMapCopy.label)}">
     <svg class="map-terrain" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
       <defs><radialGradient id="map-depth"><stop stop-color="#559394" stop-opacity=".12"/><stop offset="1" stop-color="#559394" stop-opacity="0"/></radialGradient></defs>
       <ellipse cx="210" cy="90" rx="360" ry="230" fill="url(#map-depth)"/>
@@ -66,6 +70,7 @@ export function mountLearningMap(root: HTMLElement | null) {
   const { signal } = controller;
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-map-node]')];
   const traveler = mountRouteTraveler(root);
+  const toolbar = root.previousElementSibling!;
   let active: HTMLButtonElement | null = null;
   let pinned: HTMLButtonElement | null = null;
   let mode: 'hover' | 'keyboard' | 'touch' = 'keyboard';
@@ -79,6 +84,7 @@ export function mountLearningMap(root: HTMLElement | null) {
     if (!button) pinned = null;
     traveler.setPaused(button !== null);
     traveler.highlightStop(button ? buttons.indexOf(button) : null);
+    if (button) discoverFeature('map-nodes');
     for (const item of buttons) {
       const active = item === button;
       item.setAttribute('aria-expanded', String(active));
@@ -130,8 +136,28 @@ export function mountLearningMap(root: HTMLElement | null) {
   root.addEventListener('click', event => {
     if ((event.target as Element).closest('.map-node, .map-note')) return;
     show(null);
-    traveler.guideTo(event.clientX, event.clientY);
+    if (traveler.guideTo(event.clientX, event.clientY)) discoverFeature('map-route');
   }, { signal });
+  toolbar.querySelector('.map-guide-next')!.addEventListener('click', () => {
+    show(null); traveler.guideNext(); discoverFeature('map-route');
+  }, { signal });
+  const topicGroups: Record<string, string[]> = {
+    foundations: ['foundations', 'field-notes'],
+    offensive: ['offensive-labs', 'new-directions'],
+    defensive: ['new-directions', 'defensive-practice', 'field-notes'],
+  };
+  for (const button of toolbar.querySelectorAll<HTMLButtonElement>('[data-map-filter]')) {
+    button.addEventListener('click', () => {
+      show(null);
+      const category = button.dataset.mapFilter!;
+      toolbar.querySelectorAll<HTMLButtonElement>('[data-map-filter]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      for (const node of buttons) {
+        const related = category === 'all' || topicGroups[category].includes(node.dataset.mapNode!);
+        node.closest('.map-stop')!.classList.toggle('is-unrelated', !related);
+        node.closest('.map-stop')!.classList.toggle('is-related', category !== 'all' && related);
+      }
+    }, { signal });
+  }
   document.addEventListener('click', event => {
     if (!root.contains(event.target as Node)) show(null);
   }, { signal });

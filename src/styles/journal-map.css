@@ -47,6 +47,16 @@
 .journal-map-footer { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
 .journal-map-hint { color: #a6c0c4; font-size: 12px; line-height: 1.7; }
 .map-touch-hint { display: none; }
+.map-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; margin-top: 35px; }
+.map-topic-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.map-topic-controls > span { color: #a6c3c7; font-size: 12px; margin-right: 6px; }
+.map-topic-controls button { border: 1px solid #bcd5ce38; border-radius: 24px; padding: 11px 15px; font-size: 12px; background: #0c29364d; color: #b3cdce; transition: color .2s, background .2s; }
+.map-topic-controls button[aria-pressed=true] { color: #eff7e8; background: #8ebbae25; border-color: #c2dbcf8c; }
+.map-guide-next { background: #0b2c394d; padding: 12px 16px; border: 1px solid #bcd5ce38; border-radius: 5px; font-size: 12px; }
+.map-stop.is-unrelated:not(.is-active) .map-node { opacity: .45; }
+.map-stop.is-related .map-node-dot { box-shadow: 0 0 0 1px #d1e2ca, 0 0 20px #a6d2c355; }
+.map-node { transition: opacity .3s; }
+.map-node:focus-visible { opacity: 1 !important; }
 @media (max-width: 1000px) {
   .journal-map-heading { gap: 30px; }
   .journal-map-heading h2 { font-size: 64px; }

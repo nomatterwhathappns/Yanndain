@@ -9,6 +9,11 @@ import type { OceanControls, OceanState } from '../ocean/scene';
 import { learningMap, mountLearningMap } from '../journal/map';
 import { journalMapCopy } from '../content/journal-map';
 import { mountWaterFeedback } from '../interactions/water-feedback';
+import { interactionCopy } from '../content/interactions';
+import { mountDiscovery } from '../interactions/discovery';
+import { mountOceanInput } from '../interactions/ocean-input';
+import { mountExplorer } from '../interactions/explorer';
+import { mountProjectPreviews, type ProjectPosition } from '../interactions/project-preview';
 
 const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const $$ = <T extends Element = HTMLElement>(selector: string) => [...document.querySelectorAll<T>(selector)];
@@ -27,9 +32,15 @@ let disposeLearningMap: (() => void) | undefined;
 let queued = false;
 let savedHomeScroll = 0;
 let navigationToken = 0;
+let pageTransition: Animation | undefined;
+let projectPosition: ProjectPosition = { scroll: 0, open: null };
+let projectPreviews: ReturnType<typeof mountProjectPreviews> | undefined;
 const main = $('#content');
 const menu = $<HTMLDialogElement>('#site-menu');
 const disposeWaterFeedback = mountWaterFeedback($('.ocean-world'));
+const discovery = mountDiscovery(() => language);
+const explorer = mountExplorer(() => ocean, () => language, () => updateScene());
+const disposeOceanInput = mountOceanInput(() => ocean, () => reduced);
 const t = (value: Localized) => local(value, language);
 const escape = (text: string) => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 function href(path: string, lang = language) { return `${portable ? '#' : ''}/${lang}${path === '/' ? '' : path}`; }
@@ -67,6 +78,9 @@ function featuredProjectRow(project: Project, index: number) {
       <div class="featured-project-title"><span class="featured-project-category" lang="en">${escape(project.category)}</span><h3 lang="en">${escape(project.title)}</h3></div>
       <div class="featured-project-description"><span class="preview-badge">${t(copy.preview)}</span><p>${t(project.description)}</p></div>
     </a>
+    <details class="project-peek" data-project="${project.slug}"><summary>${t(interactionCopy.peek)}</summary>
+      <div class="project-peek-content">${project.sections.slice(0, 2).map(section => `<div><h4 lang="en">${escape(section.title)}</h4><p>${t(section.description)}</p></div>`).join('')}${routeLink(`/projects/${project.slug}`, t(interactionCopy.detail), 'text-link')}</div>
+    </details>
   </li>`;
 }
 function journalCard() {
@@ -192,9 +206,18 @@ function refreshChrome() {
     return `<a href="${href(path as string)}" data-route="${path}" ${current ? 'aria-current="page"' : ''}><span>${t(label as Localized)}</span></a>`;
   }).join('') + sectionLink('contact', t(copy.contact));
   $$<HTMLButtonElement>('[data-language]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.language === language)));
+  const touch = matchMedia('(hover: none)').matches;
+  $('.menu-experience').innerHTML = `<button type="button" class="button button-ocean explore-launch" ${document.documentElement.dataset.scene === 'ready' ? '' : 'hidden'}><span lang="en">${interactionCopy.explore}</span><small>${t(interactionCopy.exploreDescription)}</small></button>`;
+  $('.interaction-help').innerHTML = `<summary>${t(interactionCopy.help)}</summary><p>${t(interactionCopy.helpIntro)}</p><ul>
+    <li>${t(touch ? interactionCopy.mapNodesTouch : interactionCopy.mapNodes)}</li><li>${t(touch ? interactionCopy.mapRouteTouch : interactionCopy.mapRoute)}</li>
+    <li>${t(interactionCopy.mapNodesKeyboard)}</li><li>${t(interactionCopy.mapRouteKeyboard)}</li><li>${t(interactionCopy.projectPreview)}</li>
+    <li class="water-help">${t(touch ? interactionCopy.oceanTouch : interactionCopy.ocean)}</li></ul><button type="button" class="text-link replay-hints">${t(interactionCopy.replay)}</button>`;
   refreshMotion();
 }
 function render() {
+  pageTransition?.cancel();
+  if (projectPreviews) projectPosition = projectPreviews.save();
+  projectPreviews?.dispose();
   revealObserver?.disconnect();
   disposeLearningMap?.();
   refreshChrome();
@@ -203,13 +226,21 @@ function render() {
     : route === '/journal' ? journalPage() : parts[0] === 'projects' && parts.length === 2 ? detailPage('project', parts[1])
     : parts[0] === 'journal' && parts.length === 2 ? detailPage('article', parts[1]) : notFound();
   disposeLearningMap = mountLearningMap(document.querySelector('.learning-map'));
+  projectPreviews = mountProjectPreviews(document.querySelector('.featured-projects-panel'), projectPosition);
   revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver?.unobserve(entry.target); }
   }), { threshold: 0.08 });
   $$('.reveal').forEach(element => reduced ? element.classList.add('is-visible') : revealObserver!.observe(element));
   updateScene();
+  discovery.refresh();
+}
+function animatePage() {
+  if (reduced) return;
+  pageTransition?.cancel();
+  pageTransition = main.animate([{ opacity: .25, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 360, easing: 'cubic-bezier(.2,.7,.3,1)' });
 }
 function navigate(path: string, options: { lang?: Language; section?: string; preserve?: boolean; replace?: boolean } = {}) {
+  explorer.close();
   if (path === '/projects') { path = '/'; options = { ...options, section: 'projects' }; }
   const oldScroll = window.scrollY;
   if (route === '/') savedHomeScroll = oldScroll;
@@ -228,9 +259,11 @@ function navigate(path: string, options: { lang?: Language; section?: string; pr
     else window.scrollTo({ top: options.preserve ? oldScroll : path === '/' && oldRoute !== '/' ? savedHomeScroll : 0, behavior: 'instant' });
     main.focus({ preventScroll: true });
     updateScene();
+    if (oldRoute !== route) animatePage();
   });
 }
 function onHistory() {
+  explorer.close();
   menu.close();
   parseLocation();
   render();
@@ -238,6 +271,7 @@ function onHistory() {
     const section = portable ? new URLSearchParams(location.hash.split('?')[1] || '').get('section') : location.hash.slice(1);
     if (section) document.getElementById(section)?.scrollIntoView({ behavior: 'instant' });
     updateScene();
+    animatePage();
   });
 }
 window.addEventListener('popstate', onHistory);
@@ -256,6 +290,7 @@ document.addEventListener('click', event => {
 });
 $$<HTMLButtonElement>('[data-language]').forEach(button => button.addEventListener('click', () => navigate(route, { lang: button.dataset.language as Language, preserve: true, replace: true })));
 $('.menu-toggle').addEventListener('click', () => {
+  ocean?.clearPointer();
   menu.showModal();
   document.body.classList.add('menu-open');
   $('.menu-toggle').setAttribute('aria-expanded', 'true');
@@ -266,6 +301,12 @@ menu.addEventListener('close', () => {
   $('.menu-toggle').setAttribute('aria-expanded', 'false');
 });
 menu.addEventListener('click', event => {
+  if ((event.target as Element).closest('.explore-launch')) {
+    menu.close(); explorer.open($('.menu-toggle'), event.detail === 0); return;
+  }
+  if ((event.target as Element).closest('.replay-hints')) {
+    menu.close(); discovery.replay(); return;
+  }
   const bounds = menu.getBoundingClientRect();
   if (event.target === menu && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) menu.close();
 });
@@ -279,6 +320,7 @@ function setMotion(value: boolean) {
   reduced = value;
   refreshMotion();
   ocean?.setReducedMotion(value);
+  if (value) pageTransition?.cancel();
   if (value) $$('.reveal').forEach(element => element.classList.add('is-visible'));
   updateScene();
 }
@@ -309,14 +351,14 @@ function formation(id: string) {
 function updateScene() {
   queued = false;
   $('.site-header').classList.toggle('scrolled', window.scrollY > 40);
-  const isHome = route === '/';
-  const depth = isHome ? clamp(window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)) : route.startsWith('/journal') ? 0.72 : route.startsWith('/projects') ? 0.45 : 0.22;
+  const isHome = route === '/' && !explorer.active;
+  const depth = explorer.active ? .22 : isHome ? clamp(window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)) : route.startsWith('/journal') ? 0.72 : route.startsWith('/projects') ? 0.45 : 0.22;
   const vortex = isHome ? formation('curiosity') : { amount: 0, phase: 0, y: 0 };
   const tornado = isHome ? formation('about') : { amount: 0, phase: 0, y: 0 };
   const tornadoSpace = isHome ? document.querySelector('.about-space')?.getBoundingClientRect() : undefined;
   const tornadoY = tornadoSpace ? 1 - (tornadoSpace.top + tornadoSpace.height / 2) / innerHeight * 2 : 0;
   const corridor = isHome ? formation('contact') : { amount: 0, phase: 0, y: 0 };
-  const state: OceanState = { depth, tornado: tornado.amount, tornadoY, vortex: vortex.amount, vortexPhase: vortex.phase, vortexY: vortex.y, corridor: corridor.amount, corridorPhase: corridor.phase, corridorY: corridor.y, reading: !isHome };
+  const state: OceanState = { depth, tornado: tornado.amount, tornadoY, vortex: vortex.amount, vortexPhase: vortex.phase, vortexY: vortex.y, corridor: corridor.amount, corridorPhase: corridor.phase, corridorY: corridor.y, reading: !isHome && !explorer.active };
   ocean?.setState(state);
   document.documentElement.style.setProperty('--depth', String(depth));
   document.documentElement.style.setProperty('--formation', String(Math.max(vortex.amount, corridor.amount)));
@@ -325,10 +367,6 @@ function updateScene() {
 function queueScroll() { if (!queued) { queued = true; requestAnimationFrame(updateScene); } }
 window.addEventListener('scroll', queueScroll, { passive: true });
 window.addEventListener('resize', queueScroll, { passive: true });
-window.addEventListener('pointermove', event => {
-  if (event.pointerType === 'mouse' && !reduced && !menu.open) ocean?.setPointer(event.clientX / innerWidth * 2 - 1, event.clientY / innerHeight * 2 - 1);
-}, { passive: true });
-document.addEventListener('pointerleave', () => ocean?.setPointer(0, 0));
 parseLocation();
 document.documentElement.classList.add('js');
 writeLocation(href(route) + (portable ? (location.hash.includes('?') ? `?${location.hash.split('?')[1]}` : '') : location.hash), true);
@@ -341,9 +379,10 @@ import('../ocean/scene').then(({ mountOcean }) => {
   ocean = mountOcean($<HTMLCanvasElement>('#ocean'));
   ocean.setReducedMotion(reduced);
   document.documentElement.dataset.scene = 'ready';
+  $('.explore-launch').hidden = false;
   updateScene();
 }).catch(error => {
   document.documentElement.dataset.scene = 'fallback';
   console.warn('The 3D ocean is unavailable; the readable static experience is active.', error instanceof Error ? error.message : '');
 });
-if (import.meta.hot) import.meta.hot.dispose(() => { ocean?.dispose(); revealObserver?.disconnect(); disposeLearningMap?.(); disposeWaterFeedback(); });
+if (import.meta.hot) import.meta.hot.dispose(() => { explorer.dispose(); discovery.dispose(); disposeOceanInput(); projectPreviews?.dispose(); pageTransition?.cancel(); ocean?.dispose(); revealObserver?.disconnect(); disposeLearningMap?.(); disposeWaterFeedback(); });

@@ -66,6 +66,7 @@ h1 em, h2 em { color: #dbe8dd; }
 .button-ocean { background: #082b3b99; border: 1px solid #c3e1e273; color: #e6f1ef; backdrop-filter: blur(10px); }
 .button-ocean:hover, .button-ocean:focus-visible { background: #164858c9; border-color: #d4edeb; }
 .button-ocean:hover svg { transform: translateY(3px); }
+.button:active, .map-guide-next:active, .menu-toggle:active { background-color: #33748683; border-color: #d4edeb; }
 .button-outline { background: #0e293433; border: 1px solid #bad0c94f; }
 .button-outline:hover, .button-outline:focus-visible { border-color: #d7e6cf; background: #b7ddce24; }
 .text-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 22px; font-size: 13px; padding: 12px 0; border-bottom: 1px solid #a8c2be60; transition: color .25s, border-color .25s, background .25s; }

@@ -34,8 +34,3 @@
   .project-page footer { margin-top: 54px; }
   [data-page=projects] .reading-shade { background: #03121cd4; }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .project-intro { animation: project-arrive .65s ease both; }
-  .project-detail .article-body { animation: project-arrive .75s .08s ease both; }
-  @keyframes project-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-}

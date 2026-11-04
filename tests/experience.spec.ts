@@ -63,7 +63,11 @@ test('vortex reverses with scrolling and the final contact section inherits the 
   // Software WebGL needs extra time to compile shaders on a fresh browser.
   await expect(page.locator('html')).toHaveAttribute('data-scene', 'ready', { timeout: 60_000 });
   async function center(id: string) {
-    await page.locator(`#${id}`).evaluate(el => scrollTo({ top: el.getBoundingClientRect().top + scrollY + el.getBoundingClientRect().height / 2 - innerHeight / 2, behavior: 'instant' }));
+    await page.locator(`#${id}`).evaluate(async el => {
+      scrollTo({ top: el.getBoundingClientRect().top + scrollY + el.getBoundingClientRect().height / 2 - innerHeight / 2, behavior: 'instant' });
+      // Allow the scroll event and its scheduled frame before the next jump.
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
   }
   await center('about');
   await expect(page.locator('html')).toHaveAttribute('data-formation', 'tornado');
