@@ -13,7 +13,7 @@ export function mountWaterFeedback(ocean: HTMLElement) {
   const { signal } = controller;
   const media = matchMedia('(prefers-reduced-motion: reduce)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  const surfaces = '.button, .featured-project-link, .journal-card, .menu-links > a';
+  const surfaces = '.button, .featured-projects-panel, .journal-card, .menu-links > a';
   const rings = new Map<HTMLElement, Animation>();
   let surface: HTMLElement | null = null;
   let frame = 0;

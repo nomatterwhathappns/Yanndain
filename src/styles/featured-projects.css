@@ -1,4 +1,9 @@
 /* The Home panel is the project collection; entries open their detail pages. */
+@property --project-light {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
 .featured-projects-heading {
   display: flex;
   align-items: flex-end;
@@ -9,6 +14,7 @@
 .featured-projects-heading h2 { font-size: clamp(54px, 5.6vw, 86px); max-width: 720px; }
 .featured-projects-heading > p { max-width: 290px; color: var(--muted); font-size: 13px; line-height: 1.9; padding-bottom: 5px; }
 .featured-projects-panel {
+  --project-light: 0;
   max-height: 460px;
   overflow-y: auto;
   scrollbar-gutter: stable;
@@ -16,12 +22,18 @@
   scrollbar-color: #81a5b2 #102d3b;
   scroll-padding-block: 16px;
   padding: 10px 24px;
-  background: linear-gradient(125deg, #143745b8, #061e2cdb);
+  /* One light on the scrolling panel: it crosses rows without a rectangular cut. */
+  background:
+    radial-gradient(circle 240px at var(--water-x, 50%) var(--water-y, 50%), rgb(176 227 208 / calc(var(--project-light) * .16)), rgb(176 227 208 / calc(var(--project-light) * .055)) 38%, transparent 78%),
+    linear-gradient(125deg, #143745b8, #061e2cdb);
+  background-attachment: scroll;
+  transition: --project-light .3s ease;
   border: 1px solid #b7d3d540;
   border-radius: 16px;
   box-shadow: 0 24px 70px #00121b38, inset 0 1px 0 #e0f5ee0a;
   backdrop-filter: blur(8px);
 }
+.featured-projects-panel.water-hover { --project-light: 1; }
 .featured-projects-panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .featured-projects-panel::-webkit-scrollbar { width: 7px; }
 .featured-projects-panel::-webkit-scrollbar-track { background: #102d3b; margin-block: 16px; }
@@ -39,16 +51,6 @@
   min-height: 184px;
   padding: 30px 20px;
   isolation: isolate;
-}
-.featured-project-link::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(105deg, #5fadb41c, #092a3c55 65%, transparent);
-  border-left: 2px solid #c4e4df;
-  opacity: 0;
-  transition: opacity .35s ease;
 }
 .featured-project-number {
   font-family: var(--serif);
@@ -78,10 +80,8 @@
 .project-peek-content h4 { font-family: var(--serif); font-weight: 400; font-size: 27px; margin: 0 0 10px; }
 .project-peek-content p { font-size: 13px; color: #b2c7cf; line-height: 1.85; }
 .project-peek-content > a { grid-column: 1 / -1; justify-self: start; }
-.featured-project-link:focus-visible::before { opacity: 1; }
 .featured-project-link:focus-visible .featured-project-number { color: #d4e5dd; }
 @media (hover: hover) {
-  .featured-project-link:hover::before { opacity: 1; }
   .featured-project-link:hover .featured-project-number { color: #d4e5dd; }
   .featured-project-link:hover .featured-project-title h3 { transform: translateX(6px); }
 }
@@ -103,7 +103,6 @@
   .featured-project-description { grid-column: 2; grid-row: 2; max-width: 300px; }
   .featured-project-description p { font-size: 12px; }
   .featured-project-description .preview-badge { margin-bottom: 8px; }
-  .featured-project-link::before { inset-inline: -10px; }
   .project-peek { margin-left: 48px; margin-right: 0; }
   .project-peek-content { grid-template-columns: 1fr; gap: 22px; }
 }

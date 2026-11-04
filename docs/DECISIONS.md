@@ -63,6 +63,8 @@ Contextual hints explain the less obvious actions. One small, dismissible cue ap
 
 Page changes use a short content fade/translation while keeping the existing Three.js scene. Navigation is immediate and remains functional during the transition. Reduced motion removes the transition.
 
+The project collection uses one soft pointer light painted on the panel background. It crosses row separators and preview controls without being clipped to individual links, and stays in panel coordinates during inner scrolling. Rectangular row fills and the vertical hover stripe are removed; text feedback and keyboard focus outlines remain.
+
 The curiosity quote keeps its own connected transition space:
 
 > Learn.<br>
