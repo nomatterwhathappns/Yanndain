@@ -1,7 +1,6 @@
 import { words } from './index';
 
 export const interactionCopy = {
-  dismiss: words('Tutup petunjuk', 'Dismiss hint'),
   help: words('Petunjuk interaksi', 'Interaction guide'),
   replay: words('Tampilkan petunjuk lagi', 'Show hints again'),
   helpIntro: words('Coba saat menjelajah. Semua isi tetap bisa dibuka tanpa memainkan lautnya.', 'Try these as you explore. All content is accessible without interacting with the ocean.'),

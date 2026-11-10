@@ -1,7 +1,7 @@
 import type { OceanControls } from '../ocean/scene';
 import { discoverFeature, type DiscoveryId } from '../content/interactions';
 
-const controls = 'a, button, summary, input, textarea, select, h1, h2, h3, h4, p, .learning-map, .map-toolbar, .featured-projects-panel, .inner-page, .site-header, .discovery-cue';
+const controls = 'a, button, summary, input, textarea, select, h1, h2, h3, h4, p, .learning-map, .map-toolbar, .featured-projects-panel, .inner-page, .site-header';
 export function mountOceanInput(getOcean: () => OceanControls | undefined, isReduced: () => boolean) {
   const controller = new AbortController();
   const { signal } = controller;

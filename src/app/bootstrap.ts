@@ -38,7 +38,7 @@ let projectPreviews: ReturnType<typeof mountProjectPreviews> | undefined;
 const main = $('#content');
 const menu = $<HTMLDialogElement>('#site-menu');
 const disposeWaterFeedback = mountWaterFeedback($('.ocean-world'));
-const discovery = mountDiscovery(() => language);
+const discovery = mountDiscovery();
 const explorer = mountExplorer(() => ocean, () => language, () => updateScene());
 const disposeOceanInput = mountOceanInput(() => ocean, () => reduced);
 const t = (value: Localized) => local(value, language);

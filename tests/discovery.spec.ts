@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-async function withoutGPU(page: import('@playwright/test').Page) {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
+async function withoutGPU(page: import('@playwright/test').Page, reducedMotion: 'reduce' | 'no-preference' = 'reduce') {
+  await page.emulateMedia({ reducedMotion });
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (type: string, ...args: unknown[]) {
@@ -11,39 +11,82 @@ async function withoutGPU(page: import('@playwright/test').Page) {
   await page.goto('/id');
 }
 
-test('context hints teach the map locally, stop after use, and can be replayed from the menu', async ({ page }) => {
-  await withoutGPU(page);
+test('ghost gestures stay at the map target, yield to real input and replay from the menu', async ({ page }) => {
+  await withoutGPU(page, 'no-preference');
   const map = page.locator('.learning-map');
   await map.evaluate(el => scrollTo({ top: scrollY + el.getBoundingClientRect().top - 100, behavior: 'instant' }));
-  const cue = page.locator('.discovery-cue');
+  const cue = page.locator('.discovery-demo');
   await expect(cue).toBeVisible();
   await expect(cue).toHaveAttribute('data-feature', 'map-nodes');
-  await expect(cue).toContainText('Sorot titik');
+  await expect(cue).toHaveAttribute('data-input', 'mouse');
+  await expect(cue).toHaveAttribute('aria-hidden', 'true');
+  await expect(cue).toHaveCSS('pointer-events', 'none');
+  await expect(cue.locator('button, p, [tabindex]')).toHaveCount(0);
+  await expect(page.locator('.discovery-cue')).toHaveCount(0);
   await expect(page.locator('.discovery-target')).toHaveCount(1);
-  const node = page.locator('.map-node').first();
+  const node = page.locator('.map-node.discovery-target');
+  const nodeBounds = (await node.boundingBox())!;
+  const start = (await cue.boundingBox())!;
+  expect(start.x).toBeCloseTo(nodeBounds.x + nodeBounds.width / 2, 0);
+  expect(start.y).toBeCloseTo(nodeBounds.y + nodeBounds.height / 2, 0);
+  // The demonstration must not open notes, move focus or scroll for the visitor.
+  await expect(page.locator('.map-note:not([hidden])')).toHaveCount(0);
+  await page.evaluate(() => scrollBy({ top: 60, behavior: 'instant' }));
+  await expect.poll(async () => (await cue.boundingBox())?.y).toBeCloseTo(start.y - 60, 0);
+  const nodeId = await node.getAttribute('data-map-node');
   await node.hover();
-  await expect(node).toHaveAttribute('aria-expanded', 'true');
-  const bounds = (await node.boundingBox())!;
-  await page.mouse.move(bounds.x + bounds.width + 25, bounds.y + 26);
-  await expect(node).toHaveAttribute('aria-expanded', 'false');
-  await expect(cue).toHaveAttribute('data-feature', 'map-route');
-  const fish = page.locator('.map-route-desktop .map-traveler');
-  const initial = await fish.getAttribute('transform');
-  await page.locator('.map-guide-next').click();
-  await expect(fish).not.toHaveAttribute('transform', initial!);
+  const usedNode = page.locator(`[data-map-node="${nodeId}"]`);
+  await expect(usedNode).toHaveAttribute('aria-expanded', 'true');
   await expect(cue).toBeHidden();
-  // Clicking a toolbar outside the viewport may scroll the chart out of view.
-  // Replay is contextual: first bring its actual target back onto the screen.
+  const bounds = (await usedNode.boundingBox())!;
+  await page.mouse.move(bounds.x + bounds.width + 25, bounds.y + 26);
+  await expect(usedNode).toHaveAttribute('aria-expanded', 'false');
+  await expect(cue).toBeVisible();
+  await expect(cue).toHaveAttribute('data-feature', 'map-route');
+  const routePoint = (await cue.boundingBox())!;
+  await page.mouse.click(routePoint.x, routePoint.y);
+  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('yanndain-discoveries-v1') || '[]'))).toEqual(expect.arrayContaining(['map-nodes', 'map-route']));
+  await expect(cue).toBeHidden();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await map.evaluate(el => scrollTo({ top: scrollY + el.getBoundingClientRect().top - 100, behavior: 'instant' }));
+  await page.waitForTimeout(1500);
+  await expect(cue).toBeHidden();
   await page.locator('.menu-toggle').click();
   await page.locator('.interaction-help summary').click();
   await expect(page.locator('.interaction-help')).toContainText('Tombol panah');
   await page.locator('.replay-hints').click();
   await expect(cue).toBeVisible();
   await expect(cue).toHaveAttribute('data-feature', 'map-nodes');
-  await cue.getByRole('button').click();
+  await page.keyboard.press('Escape');
   await expect(cue).toBeHidden();
   await expect(page.locator('.discovery-target')).toHaveCount(0);
+});
+
+test('project gestures respect the panel clipping and stop when native scrolling is used', async ({ page }) => {
+  await withoutGPU(page);
+  const panel = page.locator('.featured-projects-panel');
+  await panel.evaluate(el => scrollTo({ top: scrollY + el.getBoundingClientRect().top - 200, behavior: 'instant' }));
+  const cue = page.locator('.discovery-demo');
+  await expect(cue).toBeVisible();
+  await expect(cue).toHaveAttribute('data-feature', 'project-preview');
+  const summary = page.locator('.project-peek summary').first();
+  await summary.click();
+  await summary.click();
+  await expect(cue).toBeVisible();
+  await expect(cue).toHaveAttribute('data-feature', 'project-scroll');
+  const bounds = (await panel.boundingBox())!;
+  const gesture = (await cue.boundingBox())!;
+  expect(gesture.x).toBeGreaterThan(bounds.x + bounds.width - 60);
+  expect(gesture.y).toBeGreaterThan(bounds.y);
+  expect(gesture.y).toBeLessThan(bounds.y + bounds.height);
+  await expect(cue.locator('.discovery-gesture')).toHaveCSS('animation-name', 'none');
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.wheel(0, 190);
+  await expect.poll(() => panel.evaluate(el => el.scrollTop)).toBeGreaterThan(24);
+  await expect(cue).toBeHidden();
 });
 
 test('project peeks keep direct links and restore the expanded item and collection position', async ({ page }) => {
@@ -98,9 +141,19 @@ test.describe('touch guidance', () => {
   test('hints teach tapping, dismiss locally, and never overflow or trap page scrolling', async ({ page }) => {
     await withoutGPU(page);
     await page.locator('.learning-map').evaluate(el => scrollTo({ top: scrollY + el.getBoundingClientRect().top - 100, behavior: 'instant' }));
-    const cue = page.locator('.discovery-cue');
+    const cue = page.locator('.discovery-demo');
     await expect(cue).toBeVisible();
-    await expect(cue).toContainText('Ketuk titik');
+    await expect(cue).toHaveAttribute('data-input', 'touch');
+    await expect(cue.locator('.discovery-hand')).toBeVisible();
+    await expect(cue.locator('.discovery-cursor')).toBeHidden();
+    await expect(cue.locator('.discovery-gesture')).toHaveCSS('animation-name', 'none');
+    await page.setViewportSize({ width: 320, height: 740 });
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await expect(cue).toBeVisible();
+    await expect(cue.locator('.discovery-hand')).toBeVisible();
+    const hand = (await cue.locator('.discovery-hand').boundingBox())!;
+    expect(hand.x).toBeGreaterThanOrEqual(0);
+    expect(hand.x + hand.width).toBeLessThanOrEqual(320);
     await page.locator('.map-node').first().tap();
     await expect(page.locator('.map-note:not([hidden])')).toHaveCount(1);
     await page.locator('.map-note:not([hidden]) .map-note-close').tap();
