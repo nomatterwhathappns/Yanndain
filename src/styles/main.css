@@ -109,6 +109,51 @@ h1 em, h2 em { color: #dbe8dd; }
 .contact-copy h2 { font-size: clamp(65px,8vw,115px); }
 .contact-copy>p { margin-top: 24px; color: #b9c9c8; font-size: 14px; }
 .contact-links { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
+.contact-links .social-link {
+  position: relative;
+  isolation: isolate;
+  min-height: 44px;
+  gap: 10px;
+  padding: 12px 6px;
+  border-bottom: 0;
+  background: transparent;
+  transition: color .45s ease;
+}
+.contact-links .social-link:hover, .contact-links .social-link:focus-visible { background: transparent; }
+.contact-links .social-link::before {
+  content: '';
+  position: absolute;
+  inset: -6px -14px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #b0e3d02b, #80b9bd14 38%, transparent 74%);
+  filter: blur(7px);
+  opacity: 0;
+  transform: scale(.84);
+  transition: opacity .55s ease, transform .7s cubic-bezier(.22, 1, .36, 1);
+}
+.contact-links .social-link::after {
+  content: '';
+  position: absolute;
+  inset: auto 6px 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, currentColor 15%, currentColor 85%, transparent);
+  opacity: .35;
+  transform: scaleX(.72);
+  transition: opacity .45s ease, transform .6s cubic-bezier(.22, 1, .36, 1);
+}
+.contact-links .social-icon { width: 20px; height: 20px; opacity: .8; transition: opacity .45s ease, transform .55s cubic-bezier(.22, 1, .36, 1); }
+.contact-links .social-link:focus-visible::before { opacity: 1; transform: scale(1.06); }
+.contact-links .social-link:focus-visible::after { opacity: .85; transform: scaleX(1); }
+.contact-links .social-link:focus-visible .social-icon { opacity: 1; transform: translateY(-1px); }
+@media (hover: hover) and (pointer: fine) {
+  .contact-links .social-link:hover::before { opacity: 1; transform: scale(1.06); }
+  .contact-links .social-link:hover::after { opacity: .85; transform: scaleX(1); }
+  .contact-links .social-link:hover .social-icon { opacity: 1; transform: translateY(-1px); }
+}
+.reduced-motion .contact-links .social-link .social-icon { transform: none; }
 .pending-contact { font-size: 13px; line-height: 1.8; color: #93acb4; }
 footer { display: flex; justify-content: space-between; align-items: center; gap: 30px; border-top: 1px solid var(--line); padding: 30px 0; }
 .footer-brand { font-size: 24px; font-weight: 650; letter-spacing: -1px; }

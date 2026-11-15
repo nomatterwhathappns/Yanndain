@@ -131,11 +131,15 @@ function home() {
       <div class="contact-links">${contactLinks()}</div></div>${footer()}
     </section>`;
 }
+function socialIcon(name: 'github' | 'instagram') {
+  if (name === 'github') return `<svg class="social-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.043-1.61-4.043-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.807 1.305 3.492.998.108-.776.418-1.305.762-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.31.465-2.381 1.235-3.221-.123-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23a11.51 11.51 0 0 1 3.003-.404c1.02.005 2.047.138 3.003.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.652.242 2.873.119 3.176.77.84 1.233 1.911 1.233 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.898-.015 3.293 0 .322.216.694.825.576C20.565 21.796 24 17.3 24 12c0-6.627-5.373-12-12-12Z"/></svg>`;
+  return `<svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`;
+}
 function contactLinks() {
   const links = [];
   if (profile.email) links.push(`<a class="text-link" href="mailto:${escape(profile.email)}">${t(copy.email)}</a>`);
-  if (profile.github) links.push(`<a class="text-link" href="${escape(profile.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>`);
-  if (profile.instagram) links.push(`<a class="text-link" href="${escape(profile.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a>`);
+  if (profile.github) links.push(`<a class="text-link social-link" href="${escape(profile.github)}" target="_blank" rel="noopener noreferrer">${socialIcon('github')}<span>GitHub</span></a>`);
+  if (profile.instagram) links.push(`<a class="text-link social-link" href="${escape(profile.instagram)}" target="_blank" rel="noopener noreferrer">${socialIcon('instagram')}<span>Instagram</span></a>`);
   if (profile.linkedin) links.push(`<a class="text-link" href="${escape(profile.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`);
   return links.length ? links.join('') : `<p class="pending-contact">${t(copy.contactPending)}</p>`;
 }
