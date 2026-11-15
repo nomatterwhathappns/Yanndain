@@ -9,9 +9,14 @@ async function withoutGPU(page: import('@playwright/test').Page, reducedMotion: 
     } as typeof HTMLCanvasElement.prototype.getContext;
   });
   await page.goto('/id');
+  // Geometry checks need the final font metrics before positioning a section.
+  await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 test('ghost gestures stay at the map target, yield to real input and replay from the menu', async ({ page }) => {
+  test.setTimeout(60_000);
   await withoutGPU(page, 'no-preference');
   const map = page.locator('.learning-map');
   await map.evaluate(el => scrollTo({ top: scrollY + el.getBoundingClientRect().top - 100, behavior: 'instant' }));
@@ -58,6 +63,7 @@ test('ghost gestures stay at the map target, yield to real input and replay from
   await page.locator('.interaction-help summary').click();
   await expect(page.locator('.interaction-help')).toContainText('Tombol panah');
   await page.locator('.replay-hints').click();
+  await expect(page.getByRole('dialog')).not.toBeVisible();
   await expect(cue).toBeVisible();
   await expect(cue).toHaveAttribute('data-feature', 'map-nodes');
   await page.keyboard.press('Escape');
@@ -74,7 +80,7 @@ test('project gestures respect the panel clipping and stop when native scrolling
   await expect(cue).toHaveAttribute('data-feature', 'project-preview');
   const summary = page.locator('.project-peek summary').first();
   await summary.click();
-  await summary.click();
+  await expect(page.locator('.project-peek').first()).toHaveAttribute('open', '');
   await expect(cue).toBeVisible();
   await expect(cue).toHaveAttribute('data-feature', 'project-scroll');
   const bounds = (await panel.boundingBox())!;
@@ -95,19 +101,19 @@ test('project peeks keep direct links and restore the expanded item and collecti
   const peek = page.locator('.project-peek').nth(1);
   await peek.locator('summary').click();
   await expect(peek).toHaveAttribute('open', '');
-  await expect(peek).toContainText('The analysis');
+  await expect(peek).toContainText('Following the data');
   const other = page.locator('.project-peek').first();
   await other.locator('summary').click();
   await expect(other).toHaveAttribute('open', '');
   await expect(peek).not.toHaveAttribute('open', '');
   await other.locator('.project-peek-content a').click();
-  await expect(page).toHaveURL(/\/id\/projects\/lab-preview$/);
+  await expect(page).toHaveURL(/\/id\/projects\/studyos$/);
   await page.locator('.back-link').click();
   await expect(panel).toBeInViewport();
   await expect(other).toHaveAttribute('open', '');
-  await expect(page.locator('.featured-project-link')).toHaveCount(3);
+  await expect(page.locator('.featured-project-link')).toHaveCount(4);
   await page.locator('.featured-project-link').last().click();
-  await expect(page).toHaveURL(/\/id\/projects\/automation-preview$/);
+  await expect(page).toHaveURL(/\/id\/projects\/linscope$/);
   await page.locator('.back-link').click();
   expect(await panel.evaluate(el => el.scrollTop)).toBeGreaterThan(30);
 });

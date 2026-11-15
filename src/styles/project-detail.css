@@ -4,16 +4,17 @@
 .project-page .back-link svg { order: -1; }
 .project-intro { margin: 64px 0 76px; }
 .project-category { color: #bad2d5; font-size: 14px; line-height: 1.6; margin-bottom: 18px; }
-.project-intro h1 { font-size: clamp(78px, 8.8vw, 156px); line-height: 1.03; letter-spacing: -.035em; max-width: 100%; text-wrap: balance; }
+.project-intro h1 { font-size: clamp(78px, 8.8vw, 156px); line-height: 1.03; letter-spacing: -.035em; max-width: 100%; text-wrap: balance; overflow-wrap: anywhere; }
 .project-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; margin-top: 30px; }
 .project-summary > p { color: #c0d2d7; font-size: clamp(16px, 1.2vw, 20px); line-height: 1.8; max-width: 74ch; }
-.project-summary .preview-badge { flex-shrink: 0; font-size: 12px; }
+.project-intro .project-stack { margin-top: 22px; color: #a9c8c6; font-size: 13px; line-height: 1.9; }
+.project-source { margin-top: 26px; }
 .project-detail .article-body { max-width: none; padding: 0; }
 .project-detail .article-body > section { padding: 0 0 56px; scroll-margin-top: 120px; }
 .project-detail .article-body > section:last-child { padding-bottom: 0; }
 .project-detail .article-body h2 { font-size: clamp(34px, 3.2vw, 52px); line-height: 1.2; margin-bottom: 18px; max-width: 100%; text-wrap: balance; }
 .project-detail .article-body p { font-size: clamp(16px, 1.2vw, 19px); line-height: 1.95; color: #c0d2d7; max-width: 86ch; text-wrap: pretty; }
-.project-detail .detail-bottom { margin: 52px 0 0; }
+.project-detail .detail-bottom { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin: 52px 0 0; }
 .project-page footer { margin-top: 80px; border-top: 0; padding-top: 30px; }
 /* Darken open water gently behind the text, without introducing a rectangle. */
 [data-page=projects] .reading-shade { background: linear-gradient(90deg, #03121ce0 0%, #03121cc9 62%, #03121c80 100%); }

@@ -71,16 +71,22 @@ function cvLink() {
 function heading(first: string, second: string, tag = 'h2') {
   return `<${tag} lang="en">${escape(first)}<br><em>${escape(second)}</em></${tag}>`;
 }
+function repositoryLink(project: Project, className = 'text-link') {
+  return `<a class="${className} project-repository-link" href="${escape(project.repository)}" target="_blank" rel="noopener noreferrer" aria-label="${t(copy.repository)}: ${escape(project.title)}"><span>${t(copy.repository)}</span></a>`;
+}
 function featuredProjectRow(project: Project, index: number) {
   return `<li class="featured-project">
     <a class="featured-project-link" href="${href(`/projects/${project.slug}`)}" data-route="/projects/${project.slug}">
       <span class="featured-project-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
       <div class="featured-project-title"><span class="featured-project-category" lang="en">${escape(project.category)}</span><h3 lang="en">${escape(project.title)}</h3></div>
-      <div class="featured-project-description"><span class="preview-badge">${t(copy.preview)}</span><p>${t(project.description)}</p></div>
+      <div class="featured-project-description"><p class="project-stack" lang="en">${project.stack.map(escape).join(' · ')}</p><p>${t(project.description)}</p></div>
     </a>
-    <details class="project-peek" data-project="${project.slug}"><summary>${t(interactionCopy.peek)}</summary>
-      <div class="project-peek-content">${project.sections.slice(0, 2).map(section => `<div><h4 lang="en">${escape(section.title)}</h4><p>${t(section.description)}</p></div>`).join('')}${routeLink(`/projects/${project.slug}`, t(interactionCopy.detail), 'text-link')}</div>
-    </details>
+    <div class="project-actions">
+      <details class="project-peek" data-project="${project.slug}"><summary>${t(interactionCopy.peek)}</summary>
+        <div class="project-peek-content">${project.sections.slice(0, 2).map(section => `<div><h4 lang="en">${escape(section.title)}</h4><p>${t(section.description)}</p></div>`).join('')}${routeLink(`/projects/${project.slug}`, t(interactionCopy.detail), 'text-link')}</div>
+      </details>
+      ${repositoryLink(project)}
+    </div>
   </li>`;
 }
 function journalCard() {
@@ -129,6 +135,7 @@ function contactLinks() {
   const links = [];
   if (profile.email) links.push(`<a class="text-link" href="mailto:${escape(profile.email)}">${t(copy.email)}</a>`);
   if (profile.github) links.push(`<a class="text-link" href="${escape(profile.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>`);
+  if (profile.instagram) links.push(`<a class="text-link" href="${escape(profile.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a>`);
   if (profile.linkedin) links.push(`<a class="text-link" href="${escape(profile.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`);
   return links.length ? links.join('') : `<p class="pending-contact">${t(copy.contactPending)}</p>`;
 }
@@ -159,10 +166,12 @@ function detailPage(kind: 'project' | 'article', slug: string) {
       <header class="project-intro">
         <p class="project-category" lang="en">${escape(project.category)}</p>
         <h1 lang="en">${escape(project.title)}</h1>
-        <div class="project-summary"><p>${t(project.description)}</p><span class="preview-badge">${t(copy.preview)}</span></div>
+        <div class="project-summary"><p>${t(project.description)}</p></div>
+        <p class="project-stack" lang="en">${project.stack.map(escape).join(' · ')}</p>
+        <div class="project-source">${repositoryLink(project, 'button button-ocean')}</div>
       </header>
       <div class="article-body">${project.sections.map((section, i) => `<section id="part-${i}"><h2 lang="en">${escape(section.title)}</h2><p>${t(section.description)}</p></section>`).join('')}</div>
-      <div class="detail-bottom">${sectionLink('projects', t(copy.nextProject), 'button button-ocean', null)}</div>
+      <div class="detail-bottom">${sectionLink('projects', t(copy.nextProject), 'button button-ocean', null)}${repositoryLink(project)}</div>
     </article>`, '/', 'projects');
   }
   const parent = '/journal';

@@ -67,12 +67,16 @@
   line-height: 1.12;
   letter-spacing: -.025em;
   transition: transform .35s ease;
+  overflow-wrap: anywhere;
 }
 .featured-project-description { max-width: 290px; }
-.featured-project-description .preview-badge { margin-bottom: 12px; }
+.featured-project-description .project-stack { color: #c9dfd6; font-size: 11px; line-height: 1.8; margin-bottom: 12px; }
 .featured-project-description p { font-size: 13px; line-height: 1.85; color: #b2c7cf; }
-.project-peek { margin: -12px 20px 24px 128px; }
+.project-actions { position: relative; margin: -12px 20px 24px 128px; }
+.project-actions > .project-repository-link { position: absolute; right: 0; top: 0; padding-block: 12px; font-size: 12px; }
+.project-peek { margin: 0; }
 .project-peek summary { width: fit-content; padding: 12px 16px; border: 1px solid #bfd8d141; border-radius: 4px; font-size: 12px; color: #c8dfda; cursor: pointer; list-style-position: inside; }
+.project-peek summary { max-width: calc(100% - 140px); }
 .project-peek summary::marker { font-size: 10px; }
 .project-peek summary:hover, .project-peek summary:focus-visible { background: #b1d9cb14; }
 .project-peek[open] summary { color: #f0f5e6; background: #b1d9cb14; }
@@ -90,7 +94,7 @@
   .featured-projects-heading > p { max-width: 440px; margin-top: 24px; }
   .featured-project-link { grid-template-columns: 50px minmax(0, 1fr) minmax(0, .9fr); gap: 20px; padding-inline: 8px; }
   .featured-project-number { font-size: 46px; }
-  .project-peek { margin-left: 78px; }
+  .project-actions { margin-left: 78px; }
 }
 @media (max-width: 760px) {
   .featured-projects-panel { max-height: none; overflow: visible; scrollbar-gutter: auto; padding: 6px 16px; border-radius: 12px; }
@@ -102,7 +106,9 @@
   .featured-project-title h3 { font-size: clamp(29px, 7.4vw, 40px); }
   .featured-project-description { grid-column: 2; grid-row: 2; max-width: 300px; }
   .featured-project-description p { font-size: 12px; }
-  .featured-project-description .preview-badge { margin-bottom: 8px; }
-  .project-peek { margin-left: 48px; margin-right: 0; }
+  .featured-project-description .project-stack { margin-bottom: 8px; }
+  .project-actions { margin-left: 48px; margin-right: 0; }
+  .project-actions > .project-repository-link { font-size: 11px; }
+  .project-peek summary { max-width: calc(100% - 112px); }
   .project-peek-content { grid-template-columns: 1fr; gap: 22px; }
 }

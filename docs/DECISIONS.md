@@ -80,7 +80,7 @@ Both follow native scroll: free swimming → gathering → formation. The curios
 
 CV links belong in Hero and About, open a PDF in a new tab, and follow the active language. One available CV may serve both languages. Links stay absent until a real PDF is provided.
 
-The user has not supplied a full name, CV, contact details, completed project documentation, or existing write-ups. The implementation keeps placeholders honest and does not invent work experience or achievements.
+The profile uses the supplied full name, GitHub, and Instagram. Project descriptions are grounded in the user's four public repositories, with reviewed revisions in `PROJECT_SOURCES.md`. CV, portrait, and journal content remain pending real files or write-ups. The implementation does not invent work experience or achievements.
 
 ## Delivery
 
@@ -101,3 +101,10 @@ The grey seafloor was removed at the user’s request. The background is open wa
 Small fish have fuller body cross-sections so they retain visible volume when turning. Their eyes, fin roots and light organs follow the curved body surface. The seam along the back shares smooth normals.
 
 All fish species, including manta and sharks, are scaled to 135% of their prior size. Tornado fish receive a subtle brightness lift toward the camera while the rear layer stays darker. The total population remains 900.
+
+
+## Repository projects and contact links
+
+The four public repositories shown by the user replace all three example projects: StudyOS, CI/CD Pipeline Security Auditor, Recycle Bin Forensics and LinScope. Each has bilingual source-backed copy, a technology list, an always-visible GitHub link on Home, and a detail page with GitHub links. Project entries no longer carry preview labels. The existing ocean panel, inline disclosures, scroll restoration and open article layout remain. Reviewed README and implementation revisions are recorded in `PROJECT_SOURCES.md`; no hosted demos or measured outcomes are invented. Older decisions describing project placeholders are superseded by this section; journal previews remain.
+
+Contact links point to the user's confirmed GitHub account and supplied Instagram profile, opening in a new tab with `noopener noreferrer`.

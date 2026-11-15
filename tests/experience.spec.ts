@@ -41,20 +41,20 @@ test('section buttons open real pages, localized detail routes survive reload an
   await expect(page).toHaveURL(/\/id#projects$/);
   await expect(page.locator('.featured-projects-panel')).toBeInViewport();
   await page.locator('.featured-project-link').nth(1).click();
-  await expect(page).toHaveURL(/\/id\/projects\/signals-preview$/);
-  await expect(page.locator('.project-summary .preview-badge')).toContainText('Pratinjau');
+  await expect(page).toHaveURL(/\/id\/projects\/ci-cd-pipeline-security-auditor$/);
+  await expect(page.locator('.project-summary .preview-badge')).toHaveCount(0);
   const detailHeadings = await page.locator('h1,h2,h3').allTextContents();
   const detailBody = await page.locator('.article-body').textContent();
   await page.getByRole('button', { name: 'EN', exact: true }).click();
   expect(await page.locator('h1,h2,h3').allTextContents()).toEqual(detailHeadings);
   expect(await page.locator('.article-body').textContent()).not.toBe(detailBody);
-  await expect(page).toHaveURL(/\/en\/projects\/signals-preview$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Reading the signals.');
+  await expect(page).toHaveURL(/\/en\/projects\/ci-cd-pipeline-security-auditor$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('CI/CD Pipeline Security Auditor');
   await page.reload();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Reading the signals.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('CI/CD Pipeline Security Auditor');
   await page.goBack();
   await expect(page).toHaveURL(/\/id#projects$/);
-  await expect(page.locator('.featured-project-link')).toHaveCount(3);
+  await expect(page.locator('.featured-project-link')).toHaveCount(4);
 });
 
 test('vortex reverses with scrolling and the final contact section inherits the corridor effects', async ({ page }) => {
@@ -127,7 +127,18 @@ test('mobile menu, keyboard dismissal, journal pages, contact and motion prefere
   await page.getByRole('button', { name: 'Kurangi animasi' }).click();
   await page.locator('.menu-links').getByRole('link', { name: 'Kontak' }).click();
   await expect(page.locator('#contact h2')).toBeInViewport();
-  await expect(page.locator('.contact-links')).toContainText('akan ditambahkan');
+  const contacts = [
+    { name: 'GitHub', url: 'https://github.com/nomatterwhathappns' },
+    { name: 'Instagram', url: 'https://www.instagram.com/ryanndafajr?cplk=MWd4dzBndTd1ZjBoMg==' },
+  ];
+  for (const contact of contacts) {
+    const link = page.locator('.contact-links').getByRole('link', { name: contact.name, exact: true });
+    await expect(link).toHaveAttribute('href', contact.url);
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', /\bnoopener\b/);
+    await expect(link).toHaveAttribute('rel', /\bnoreferrer\b/);
+  }
+  await expect(page.locator('.contact-links .pending-contact')).toHaveCount(0);
   await page.reload();
   await expect(page.locator('html')).toHaveClass(/reduced-motion/);
   await expect(page.locator('#ocean')).toHaveAttribute('data-fish-count', '900');
@@ -178,10 +189,10 @@ test('without WebGL, content and route navigation remain usable', async ({ page 
   await page.goto('/id');
   await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
   await page.locator('.featured-project-link').first().click();
-  await expect(page).toHaveURL(/\/id\/projects\/lab-preview$/);
+  await expect(page).toHaveURL(/\/id\/projects\/studyos$/);
   await expect(page.locator('.article-body')).toBeVisible();
   await page.getByRole('button', { name: 'EN', exact: true }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('A home lab.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('StudyOS');
 });
 
 test('retired project index redirects home and detail navigation returns to the collection', async ({ page }) => {
@@ -203,7 +214,7 @@ test('retired project index redirects home and detail navigation returns to the 
     await page.locator('.back-link').click();
     await expect(page.locator('.featured-projects-panel')).toBeInViewport();
     await page.locator('.featured-project-link').last().click();
-    await page.locator('.detail-bottom a').click();
+    await page.locator('.detail-bottom [data-section="projects"]').click();
     await expect(page.locator('.featured-projects-panel')).toBeInViewport();
     await page.locator('.brand').click();
     await page.locator('.menu-toggle').click();
@@ -217,7 +228,7 @@ test('retired project index redirects home and detail navigation returns to the 
   await expect(page).toHaveURL(/#\/en\?section=projects$/);
   await expect(page.locator('.featured-projects-panel')).toBeInViewport();
   await page.locator('.featured-project-link').first().click();
-  await expect(page).toHaveURL(/#\/en\/projects\/lab-preview$/);
+  await expect(page).toHaveURL(/#\/en\/projects\/studyos$/);
   await page.reload();
   await expect(page.locator('.project-detail')).toBeVisible();
   await page.locator('.back-link').click();
