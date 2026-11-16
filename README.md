@@ -55,7 +55,7 @@ vite.preview.config.ts      # Ekspor HTML lengkap
 
 Edit profil, kontak, dan isi umum website di `src/content/index.ts`. Empat proyek GitHub asli beserta deskripsi ID/EN, teknologi, dan tautan repo ada di `src/content/projects.ts`: StudyOS, CI/CD Pipeline Security Auditor, Recycle Bin Forensics, dan LinScope. Referensi kode serta revisi yang ditinjau dicatat di `docs/PROJECT_SOURCES.md`. GitHub dan Instagram tersedia di bagian Contact; CV dan kontak lain muncul setelah data asli diisi.
 
-Tahap perjalanan pribadi ada di `src/content/journal-map.ts`, cerita lengkap ID/EN di `src/content/journey.ts`, dan delapan sertifikat asli di `src/content/certificates.ts`. Referensi dokumen tercatat di `docs/CERTIFICATE_SOURCES.md`. Empat sertifikat utama langsung tampil; empat lainnya tersedia melalui disclosure. Interaksi peta tetap berada di `src/journal/map.ts`, dengan gaya peta dan halaman jurnal di `src/styles/journal-map.css` dan `src/styles/journal-content.css`.
+Sembilan tahap perjalanan publik yang singkat beserta progres jalurnya ada di `src/content/journal-map.ts`, ringkasan cerita ID/EN di `src/content/journey.ts`, dan delapan sertifikat asli di `src/content/certificates.ts`. Referensi dokumen tercatat di `docs/CERTIFICATE_SOURCES.md`. Empat sertifikat utama langsung tampil; empat lainnya tersedia melalui disclosure. Interaksi peta tetap berada di `src/journal/map.ts`, dengan gaya peta dan halaman jurnal di `src/styles/journal-map.css` dan `src/styles/journal-content.css`.
 
 ## Build
 
@@ -88,6 +88,8 @@ node --experimental-strip-types --test tests/tornado.test.ts tests/interaction-f
 
 Suite menggunakan Chromium di `/usr/bin/chromium`, atau lokasi executable dari variabel `CHROMIUM_PATH`. Pengujian mencakup navigasi, bahasa, mobile, formasi, gerakan ikan tanpa scroll, WebGL fallback, dan HTML portable. Software rendering bukan ukuran performa GPU pengguna.
 
-Petunjuk otomatis berupa bayangan gestur kecil langsung di fitur terkait: contoh hover atau ketuk di titik peta, klik jalur dan pratinjau, serta gestur scroll di koleksi proyek. Gestur tampil dua kali lalu hilang, mengikuti posisi fitur saat scroll, dan berhenti saat pengunjung berinteraksi. Tidak ada kotak notifikasi; reduced motion menampilkan petunjuk kontrol yang diam. Menu menyediakan **Petunjuk interaksi** dalam ID/EN, termasuk panduan keyboard dan opsi mengulang demonstrasi. **Explore the ocean** membuka mode jelajah opsional dengan drag, tap dan keyboard; tombol kembali atau Escape mengembalikan posisi bacaan. Fitur yang sudah dipakai diingat selama sesi browser, dengan fallback ketika penyimpanan dibatasi.
+Petunjuk otomatis berupa bayangan gestur kecil langsung di fitur terkait: contoh hover atau ketuk di titik peta, pratinjau proyek, serta gestur scroll di koleksi proyek. Gestur tampil dua kali lalu hilang, mengikuti posisi fitur saat scroll, dan berhenti saat pengunjung berinteraksi. Tidak ada kotak notifikasi; reduced motion menampilkan petunjuk kontrol yang diam. Menu menyediakan **Petunjuk interaksi** dalam ID/EN, termasuk panduan keyboard dan opsi mengulang demonstrasi. **Explore the ocean** membuka mode jelajah opsional dengan drag, tap dan keyboard; tombol kembali atau Escape mengembalikan posisi bacaan. Fitur yang sudah dipakai diingat selama sesi browser, dengan fallback ketika penyimpanan dibatasi.
 
 Scene berisi 900 ikan: 700 sardine, 120 jack, 50 reef, 24 lanternfish, 2 manta dan 4 hiu. Reduced motion menghentikan animasi berkelanjutan; pengguna dapat mengaktifkannya melalui menu.
+
+Titik peta dan sorotan mengikuti posisi yang sama pada jalur SVG. Ikan tetap berenang saat penjelasan titik dibaca, mengikuti preferensi reduced motion. Filter tahap dan kontrol mengarahkan ikan sudah dihapus.

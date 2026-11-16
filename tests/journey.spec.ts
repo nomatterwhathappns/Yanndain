@@ -49,41 +49,32 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function settled(page: Page) {
-  await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
+  await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback', { timeout: 15_000 });
   await page.evaluate(() => document.fonts.ready);
 }
 
-test('the home map describes the personal journey and filters its related stages', async ({ page }) => {
+test('the home map presents nine concise journey stages without filter or guiding controls', async ({ page }) => {
   await page.goto('/id');
   await settled(page);
   await expect(page.locator('#journal h2')).toHaveText(/My learning\s*journey\./);
-  const filters = page.locator('[data-map-filter]');
-  expect(await filters.evaluateAll(elements => elements.map(element => element.getAttribute('data-map-filter')))).toEqual([
-    'all', 'beginnings', 'practice', 'direction',
+  const nodes = page.locator('#journal [data-map-node]');
+  await expect(nodes).toHaveCount(9);
+  expect(await nodes.evaluateAll(elements => elements.map(element => element.getAttribute('data-map-node')))).toEqual([
+    'first-steps', 'choosing-cyber', 'web-exploration', 'security-class', 'xss-presentation',
+    'thm-practice', 'htb-practice', 'portswigger-focus', 'still-exploring',
   ]);
-
-  for (const [filter, stages] of [
-    ['beginnings', ['first-steps', 'choosing-cyber']],
-    ['practice', ['learning-path', 'hands-on-labs', 'still-exploring']],
-    ['direction', ['choosing-cyber', 'still-exploring']],
-  ] as const) {
-    const button = page.locator(`[data-map-filter="${filter}"]`);
-    await button.click();
-    await expect(button).toHaveAttribute('aria-pressed', 'true');
-    const related = page.locator('.map-stop.is-related [data-map-node]');
-    expect(await related.evaluateAll(elements => elements.map(element => element.getAttribute('data-map-node')))).toEqual(stages);
-    await expect(page.locator('.map-stop.is-unrelated')).toHaveCount(5 - stages.length);
+  await expect(page.locator('.map-toolbar, [data-map-filter], .map-guide-next, .map-route-destination')).toHaveCount(0);
+  await expect(page.locator('#journal')).not.toContainText(/Sorot tahap|Arahkan ikan|Klik jalur/i);
+  for (const text of await page.locator('#journal .map-note p').allTextContents()) {
+    expect(text.trim().length).toBeLessThanOrEqual(240);
   }
-
-  await page.locator('[data-map-filter="all"]').click();
-  await expect(page.locator('.map-stop.is-unrelated')).toHaveCount(0);
   await page.locator('#journal').getByRole('link', { name: 'Baca perjalanan saya', exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/id${storyPath}$`));
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(storyTitle);
   await expect(page.locator('.article-body section')).toHaveCount(6);
 });
 
-test('the published story preserves the chronology, completed labs and unfinished work', async ({ page }) => {
+test('the public story keeps the real milestones and completed counts in concise professional copy', async ({ page }) => {
   await page.goto(`/en${storyPath}`);
   await settled(page);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(storyTitle);
@@ -92,27 +83,27 @@ test('the published story preserves the chronology, completed labs and unfinishe
   await expect(page.locator('article .preview-badge, article .content-notice')).toHaveCount(0);
 
   await expect(sections.nth(0)).toContainText('2023');
-  await expect(sections.nth(0)).toContainText('fullstack developer');
-  await expect(sections.nth(1)).toContainText(/July[–-]August 2024/);
-  await expect(sections.nth(1)).toContainText('AI and cybersecurity');
-  await expect(sections.nth(1)).toContainText('chose to focus more on cybersecurity');
-  await expect(sections.nth(3)).toContainText('Coding Studio');
-  await expect(sections.nth(3)).toContainText('Nmap, Gobuster, and OWASP');
+  await expect(sections.nth(0)).toContainText('fullstack development');
+  await expect(sections.nth(1)).toContainText('mid-2024');
+  await expect(sections.nth(1)).toContainText('focus on cybersecurity');
+  await expect(sections.nth(1)).toContainText('XSS and SQL injection');
+  await expect(sections.nth(2)).toContainText('Coding Studio');
+  await expect(sections.nth(2)).toContainText('Nmap, Gobuster, and OWASP');
+  await expect(sections.nth(2)).toContainText('certificate was issued on 17 September 2025');
   await expect(sections.nth(3)).toContainText('OWASP Juice Shop on TryHackMe');
   await expect(sections.nth(3)).toContainText('XSS');
-  await expect(sections.nth(3)).toContainText('certificate was issued on 17 September 2025');
-
   const practice = sections.nth(4);
-  await expect(practice).toContainText('five THM rooms I have completed');
-  for (const room of ['Kenobi', 'Mr Robot CTF', 'OWASP Juice Shop', 'RootMe', 'Vulnversity']) {
-    await expect(practice).toContainText(room);
-  }
-  await expect(practice).toContainText('On HTB, I have completed Cap, Silentium, and Principal.');
-  await expect(practice).toContainText('Unified and Vaccine remain unfinished');
+  await expect(practice).toContainText('five completed TryHackMe rooms');
+  await expect(practice).toContainText('three completed Hack The Box machines');
+  await expect(practice).toContainText('Starting Point');
   await expect(practice).toContainText('PortSwigger');
   await expect(practice).toContainText('UNION');
   await expect(sections.nth(5)).toContainText('becoming a Security Engineer');
-  await expect(sections.nth(5)).toContainText('journey is still ongoing');
+  const body = page.locator('.article-body');
+  await expect(body).not.toContainText(/\bAI\b|Unified|Vaccine|unsure|harder for me|difficult to decide/i);
+  for (const paragraph of await body.locator('section p').allTextContents()) {
+    expect(paragraph.trim().length).toBeLessThanOrEqual(350);
+  }
 });
 
 test('the real journal article translates, keeps English headings and survives a direct reload', async ({ page }) => {
@@ -122,8 +113,8 @@ test('the real journal article translates, keeps English headings and survives a
   await expect(page).toHaveURL(new RegExp(`/id${storyPath}$`));
   const headings = await page.locator('.article-body h2').allTextContents();
   const indonesian = await page.locator('.article-body').innerText();
-  await expect(page.locator('.article-body')).toContainText('Juli–Agustus 2024');
-  await expect(page.locator('.article-body')).toContainText('Unified dan Vaccine belum');
+  await expect(page.locator('.article-body')).toContainText('pertengahan 2024');
+  await expect(page.locator('.article-body')).not.toContainText(/Unified|Vaccine|bingung|AI terasa|sulit untuk saya/i);
 
   await page.getByRole('button', { name: 'EN', exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/en${storyPath}$`));

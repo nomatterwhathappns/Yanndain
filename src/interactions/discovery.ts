@@ -15,7 +15,6 @@ const definitions: Definition[] = [
   { id: 'project-scroll', selector: '.featured-projects-panel', action: 'scroll' },
   { id: 'vortex', selector: '#curiosity', action: 'sweep', motion: true },
   { id: 'map-nodes', selector: '.learning-map', marker: '.map-node', action: 'hover' },
-  { id: 'map-route', selector: '.learning-map', action: 'press' },
   { id: 'corridor', selector: '#contact', action: 'sweep', motion: true },
 ];
 
@@ -87,24 +86,6 @@ export function mountDiscovery() {
         const r = root.getBoundingClientRect();
         return { x: r.right - 38, y: (Math.max(120, r.top) + Math.min(innerHeight - 100, r.bottom)) / 2 };
       });
-    }
-    if (definition.id === 'map-route') {
-      const path = [...root.querySelectorAll<SVGPathElement>('.map-route-line')].find(el => el.getBoundingClientRect().width > 0);
-      if (!path) return null;
-      const length = path.getTotalLength();
-      for (const fraction of [.28, .56, .76, .12]) {
-        const point = path.getPointAtLength(length * fraction);
-        const result = anchor(path, () => {
-          const matrix = path.getScreenCTM();
-          return matrix ? new DOMPoint(point.x, point.y).matrixTransform(matrix) : { x: -100, y: -100 };
-        });
-        const position = result?.position();
-        if (position && ![...root.querySelectorAll('.map-node')].some(node => {
-          const r = node.getBoundingClientRect();
-          return Math.hypot(r.left + r.width / 2 - position.x, r.top + r.height / 2 - position.y) < 80;
-        })) return result;
-      }
-      return null;
     }
     return anchor(root, () => {
       const r = root.getBoundingClientRect();

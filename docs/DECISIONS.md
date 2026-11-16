@@ -117,3 +117,12 @@ Five real stages replace the generic map topics: college/fullstack interest in20
 The first actual bilingual article tells the owner’s account in six sections. Five completed THM rooms include Juice Shop once; three HTB machines are named; Unified and Vaccine remain unfinished; no PortSwigger completion or professional experience is invented. The owner’s continued willingness to explore cybersecurity is the concluding theme. Home links directly to the story and separately to the journal/certificate collection. The former sample article URL redirects to the real story.
 
 Eight PDFs supplied in the owner’s shared Drive folder support the certificate collection. Coding Studio, Dicoding web fundamentals, AWS Cloud Computing Essentials and HackerRank Java Basic are featured; four further AWS course-completion records use an accessible native disclosure. Cards retain actual issuer, printed date, record type and source links, including the printed Dicoding verification URL and validity date. AWS course completions and the preview experience are not described as professional AWS certifications. Certificate IDs are not repeated in card copy.
+
+
+## Expanded concise journey and continuous swimming
+
+The journey map now uses nine short public milestones: college/fullstack interest, choosing cybersecurity, web-security foundations, structured study, the XSS presentation, THM, HTB, PortSwigger study and the current direction. The public article is shortened too, omitting private rationale and repeated uncertainty. Certificate records remain intact. This supersedes the earlier five-stop narrative and full-length personal account.
+
+Each stop carries one exact progress value per route. Dot coordinates are derived from the SVG path itself and the highlighted path uses the same normalized progress, avoiding the old nearest-sample mismatch and delayed dash-length transition. The selection stroke scales with the SVG so normalized dashes also end at the correct visible position after resizing; the other map lines retain non-scaling strokes. Reading by hover, keyboard or touch never pauses the fish. Reduced-motion preferences, hidden tabs and offscreen suspension still work. Mobile uses a taller nine-stop route, with the map switching layout at900px.
+
+The phase filters, guide-fish control, route-click steering, destination marker, automatic route-click demonstration and all steering instructions are removed. Only native point-reading guidance remains in the interaction guide; the map footer contains its navigation links.

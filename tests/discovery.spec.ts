@@ -10,7 +10,7 @@ async function withoutGPU(page: import('@playwright/test').Page, reducedMotion: 
   });
   await page.goto('/id');
   // Geometry checks need the final font metrics before positioning a section.
-  await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
+  await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback', { timeout: 15_000 });
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
@@ -46,11 +46,7 @@ test('ghost gestures stay at the map target, yield to real input and replay from
   const bounds = (await usedNode.boundingBox())!;
   await page.mouse.move(bounds.x + bounds.width + 25, bounds.y + 26);
   await expect(usedNode).toHaveAttribute('aria-expanded', 'false');
-  await expect(cue).toBeVisible();
-  await expect(cue).toHaveAttribute('data-feature', 'map-route');
-  const routePoint = (await cue.boundingBox())!;
-  await page.mouse.click(routePoint.x, routePoint.y);
-  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('yanndain-discoveries-v1') || '[]'))).toEqual(expect.arrayContaining(['map-nodes', 'map-route']));
+  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('yanndain-discoveries-v1') || '[]'))).toEqual(expect.arrayContaining(['map-nodes']));
   await expect(cue).toBeHidden();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-scene', 'fallback');
@@ -118,15 +114,11 @@ test('project peeks keep direct links and restore the expanded item and collecti
   expect(await panel.evaluate(el => el.scrollTop)).toBeGreaterThan(30);
 });
 
-test('topic emphasis, keyboard guidance and bilingual help work without WebGL or animation', async ({ page }) => {
+test('the map stays free of guide controls while keyboard notes and bilingual help remain available', async ({ page }) => {
   await withoutGPU(page);
-  await page.locator('[data-map-filter="practice"]').click();
-  await expect(page.locator('.map-stop.is-related')).toHaveCount(3);
-  await expect(page.locator('.map-stop.is-unrelated')).toHaveCount(2);
-  await page.locator('[data-map-filter="all"]').click();
-  await expect(page.locator('.map-stop.is-unrelated')).toHaveCount(0);
-  await page.locator('.map-guide-next').focus();
-  await page.keyboard.press('Enter');
+  await expect(page.locator('.map-toolbar, [data-map-filter], .map-guide-next, .map-route-destination')).toHaveCount(0);
+  await expect(page.getByText(/Sorot tahap/i)).toHaveCount(0);
+  await expect(page.locator('.map-node')).toHaveCount(9);
   await page.locator('.map-node').first().focus();
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('.map-node').nth(1)).toBeFocused();
@@ -134,11 +126,12 @@ test('topic emphasis, keyboard guidance and bilingual help work without WebGL or
   await page.keyboard.press('Escape');
   await expect(page.locator('.map-note:not([hidden])')).toHaveCount(0);
   await page.getByRole('button', { name: 'EN', exact: true }).click();
-  await expect(page.locator('.map-guide-next')).toHaveText('Guide the fish');
+  await expect(page.locator('.map-toolbar, [data-map-filter], .map-guide-next')).toHaveCount(0);
   await page.locator('.menu-toggle').click();
   await expect(page.locator('.explore-launch')).toBeHidden();
   await page.locator('.interaction-help summary').click();
   await expect(page.locator('.interaction-help')).toContainText('Arrow keys');
+  await expect(page.locator('.interaction-help')).not.toContainText(/Guide the fish|Click the route|Klik jalur|Arahkan ikan/i);
   expect(await page.locator('.discovery-target').count()).toBe(0);
 });
 

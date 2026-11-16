@@ -13,11 +13,6 @@ export const interactionCopy = {
   mapNodes: words('Sorot titik bercahaya untuk membaca tahap perjalanannya.', 'Hover over a glowing point to read its journey stage.'),
   mapNodesTouch: words('Ketuk titik bercahaya untuk membaca tahap perjalanannya.', 'Tap a glowing point to read its journey stage.'),
   mapNodesKeyboard: words('Tab ke titik peta. Tombol panah berpindah titik; Esc menutup penjelasan.', 'Tab to a map point. Arrow keys move between points; Esc closes the note.'),
-  mapRoute: words('Klik jalur untuk mengarahkan ikan penunjuk.', 'Click the route to guide the little fish.'),
-  mapRouteTouch: words('Ketuk jalur untuk mengarahkan ikan penunjuk.', 'Tap the route to guide the little fish.'),
-  mapRouteKeyboard: words('Gunakan “Arahkan ikan” untuk menuju titik berikutnya.', 'Use “Guide the fish” to visit the next point.'),
-  mapGuide: words('Arahkan ikan', 'Guide the fish'),
-  mapTopics: words('Sorot tahap', 'Highlight stages'),
   projectPreview: words('Buka “Lihat isi” untuk mengintip proyek tanpa pindah halaman.', 'Open “Peek inside” to preview a project without leaving this page.'),
   projectScroll: words('Scroll di dalam koleksi untuk melihat proyek berikutnya.', 'Scroll inside the collection to see the next project.'),
   peek: words('Lihat isi', 'Peek inside'),
@@ -34,7 +29,7 @@ export const interactionCopy = {
   viewLabel: words('Laut interaktif', 'Interactive ocean'),
 };
 
-export type DiscoveryId = 'ocean' | 'tornado' | 'vortex' | 'corridor' | 'map-nodes' | 'map-route' | 'project-preview' | 'project-scroll';
+export type DiscoveryId = 'ocean' | 'tornado' | 'vortex' | 'corridor' | 'map-nodes' | 'project-preview' | 'project-scroll';
 
 export function discoverFeature(id: DiscoveryId) {
   document.dispatchEvent(new CustomEvent('feature-discovered', { detail: id }));

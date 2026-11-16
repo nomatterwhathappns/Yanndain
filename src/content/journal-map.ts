@@ -1,30 +1,49 @@
 import { words } from './index';
 
-// Personal milestones supplied by the owner; undated stages stay undated.
+// Short public milestones supplied by the owner; undated stages stay undated.
 export const journalStops = [
-  { id: 'first-steps', title: 'A first direction', period: words('2023', '2023'), groups: ['beginnings'], x: 8, y: 70, mobileX: 21, mobileY: 13.3333,
-    description: words('Saya mulai kuliah pada 2023 dengan ketertarikan untuk menjadi fullstack developer. Itu adalah arah awal yang ingin saya pelajari.', 'I started college in 2023 with an interest in becoming a fullstack developer. It was the first direction I wanted to explore.') },
-  { id: 'choosing-cyber', title: 'Choosing cybersecurity', period: words('Pertengahan 2024', 'Mid-2024'), groups: ['beginnings', 'direction'], x: 28, y: 24, mobileX: 77, mobileY: 32,
-    description: words('Sekitar Juli–Agustus 2024, saya mempertimbangkan AI dan cybersecurity. Saat itu AI terasa lebih sulit untuk didekati, dan saya memilih cybersecurity sebagai bidang yang lebih memungkinkan untuk mulai saya pelajari.', 'Around July–August 2024, I considered AI and cybersecurity. AI felt harder for me to approach at the time, and I chose cybersecurity as a more approachable place to start.') },
-  { id: 'learning-path', title: 'A learning path', period: words('Sertifikat · 2025', 'Certificate · 2025'), groups: ['practice'], x: 47, y: 76, mobileX: 26, mobileY: 51.1111,
-    description: words('Kelas Cyber Security Beginner mengenalkan Nmap, Gobuster, OWASP, serta latihan OWASP Juice Shop. Presentasi akhir saya membahas XSS. Sertifikatnya diterbitkan pada 17 September 2025; pengalaman ini membuka jalan untuk belajar melalui praktik.', 'The Cyber Security Beginner class introduced Nmap, Gobuster, OWASP and OWASP Juice Shop practice. My final presentation covered XSS. The certificate was issued on 17 September 2025; the experience opened a path into hands-on learning.') },
-  { id: 'hands-on-labs', title: 'Learning by doing', period: words('Setelah kelas', 'After the class'), groups: ['practice'], x: 72, y: 21, mobileX: 76, mobileY: 72,
-    description: words('Saya melanjutkan latihan di TryHackMe, lalu mengenal Hack The Box. Lima room THM dan tiga machine HTB sudah saya selesaikan. Ada juga latihan yang masih belum selesai, termasuk Unified dan Vaccine di Starting Point.', 'I continued practising on TryHackMe, then discovered Hack The Box. I have completed five THM rooms and three HTB machines. Some practice remains unfinished, including Unified and Vaccine in Starting Point.') },
-  { id: 'still-exploring', title: 'Still exploring', period: words('Sekarang', 'Now'), groups: ['practice', 'direction'], x: 91, y: 64, mobileX: 32, mobileY: 89.3333,
-    description: words('Saya juga mempelajari SQLi UNION melalui PortSwigger. Arah yang ingin saya tuju adalah menjadi Security Engineer. Hal yang paling berarti adalah tetap bertahan di cybersecurity dan masih ingin terus menguliknya.', 'I also studied SQLi UNION through PortSwigger. The direction I want to pursue is becoming a Security Engineer. What matters most is staying with cybersecurity and still wanting to explore it.') },
-];
-
-export const journalFilters = [
-  { id: 'all', label: words('Semua tahap', 'All stages') },
-  { id: 'beginnings', label: words('Awal perjalanan', 'Beginnings') },
-  { id: 'practice', label: words('Latihan', 'Practice') },
-  { id: 'direction', label: words('Arah belajar', 'Direction') },
+  {
+    id: 'first-steps', title: 'First steps', period: words('2023', '2023'), progress: .02, mobileProgress: 0,
+    description: words('Saya mulai kuliah pada 2023 dengan minat pada fullstack development, yang menjadi arah awal perjalanan belajar saya.', 'I started college in 2023 with an interest in fullstack development, the first direction in my learning journey.'),
+  },
+  {
+    id: 'choosing-cyber', title: 'Choosing cybersecurity', period: words('Pertengahan 2024', 'Mid-2024'), progress: .14, mobileProgress: .125,
+    description: words('Cybersecurity mulai menjadi fokus belajar saya pada pertengahan 2024, membuka arah baru untuk mengenal keamanan sistem dan aplikasi.', 'Cybersecurity became my learning focus in mid-2024, opening a new direction for exploring how systems and web applications are secured.'),
+  },
+  {
+    id: 'web-exploration', title: 'Web security basics', period: words('Fondasi web', 'Web foundations'), progress: .26, mobileProgress: .25,
+    description: words('Saya mulai mengenal dasar-dasar keamanan web melalui XSS dan SQL injection, sebagai bekal untuk memahami kerentanan aplikasi.', 'I began exploring web security fundamentals through XSS and SQL injection, building a starting point for understanding application vulnerabilities.'),
+  },
+  {
+    id: 'security-class', title: 'Structured learning', period: words('Coding Studio', 'Coding Studio'), progress: .38, mobileProgress: .375,
+    description: words('Kelas Cyber Security Beginner dari Coding Studio memberi struktur belajar melalui pengenalan Nmap, Gobuster, dan konsep OWASP.', 'Coding Studio’s Cyber Security Beginner class gave my learning more structure through introductions to Nmap, Gobuster, and OWASP concepts.'),
+  },
+  {
+    id: 'xss-presentation', title: 'Presenting XSS', period: words('Tugas akhir', 'Final assignment'), progress: .50, mobileProgress: .5,
+    description: words('Dalam tugas akhir kelas, saya meninjau OWASP Juice Shop di TryHackMe dan mempresentasikan temuan kerentanan XSS.', 'For the class’s final assignment, I examined OWASP Juice Shop on TryHackMe and presented an XSS vulnerability finding.'),
+  },
+  {
+    id: 'thm-practice', title: 'TryHackMe practice', period: words('5 room selesai', '5 rooms completed'), progress: .62, mobileProgress: .625,
+    description: words('Saya menyelesaikan lima room TryHackMe: Kenobi, Mr Robot CTF, OWASP Juice Shop, RootMe, dan Vulnversity, sebagai bagian dari latihan.', 'I completed five TryHackMe rooms: Kenobi, Mr Robot CTF, OWASP Juice Shop, RootMe, and Vulnversity, as part of my practice.'),
+  },
+  {
+    id: 'htb-practice', title: 'Hack The Box practice', period: words('3 machine selesai', '3 machines completed'), progress: .74, mobileProgress: .75,
+    description: words('Saya menyelesaikan Cap, Silentium, dan Principal di Hack The Box, sambil terus mengembangkan pemahaman melalui latihan.', 'I completed Cap, Silentium, and Principal on Hack The Box, while continuing to develop my understanding through practice.'),
+  },
+  {
+    id: 'portswigger-focus', title: 'A closer look at SQLi', period: words('PortSwigger', 'PortSwigger'), progress: .86, mobileProgress: .875,
+    description: words('Saya belajar SQL injection UNION melalui PortSwigger untuk memperdalam pemahaman tentang salah satu teknik dalam pengujian keamanan aplikasi web.', 'I studied SQL injection UNION through PortSwigger to develop my understanding of this technique within web application security testing.'),
+  },
+  {
+    id: 'still-exploring', title: 'Still exploring', period: words('Arah saat ini', 'Current direction'), progress: .98, mobileProgress: 1,
+    description: words('Arah yang ingin saya tuju adalah menjadi Security Engineer, sambil terus membangun pemahaman dan pengalaman melalui belajar serta praktik.', 'My goal is to become a Security Engineer, continuing to build understanding and experience through study and hands-on practice.'),
+  },
 ];
 
 export const journalMapCopy = {
-  intro: words('Lima titik perjalanan saya: dari minat awal saat kuliah, menemukan cara belajar melalui praktik, sampai arah yang ingin saya tuju sekarang.', 'Five stops along my journey: from an early interest at college to finding hands-on learning and the direction I want to pursue now.'),
-  hint: words('Sorot titik untuk membaca ceritanya. Klik jalur untuk mengarahkan ikan.', 'Hover over a stop to read its story. Click the route to guide the fish.'),
-  touchHint: words('Ketuk titik untuk membaca cerita, atau jalur untuk mengarahkan ikan.', 'Tap a stop to read its story, or the route to guide the fish.'),
+  intro: words('Jejak belajar saya: dari pengembangan web, kelas cybersecurity, dan latihan lab menuju security engineering.', 'My learning path through web development, cybersecurity classes and hands-on labs toward security engineering.'),
+  hint: words('Sorot titik untuk membaca ringkasannya.', 'Hover over a stop to read its summary.'),
+  touchHint: words('Ketuk titik untuk membaca ringkasannya.', 'Tap a stop to read its summary.'),
   label: words('Peta perjalanan belajar', 'Learning journey map'),
   close: words('Tutup penjelasan', 'Close description'),
 };

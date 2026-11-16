@@ -126,7 +126,7 @@ function home() {
     <section class="journal-preview journal-map-section section content-section" id="journal">
       <div class="journal-map-heading reveal">${heading(copy.journalFirst, copy.journalSecond)}<p>${t(journalMapCopy.intro)}</p></div>
       ${learningMap(language)}
-      <div class="journal-map-footer"><p class="journal-map-hint"><span class="map-mouse-hint">${t(journalMapCopy.hint)}</span><span class="map-touch-hint">${t(journalMapCopy.touchHint)}</span></p><div class="journal-map-actions">${routeLink(`/journal/${article.slug}`, t(copy.allNotes), 'button button-ocean')}${routeLink('/journal', t(words('Kelas & sertifikat', 'Courses & certificates')))}</div></div>
+      <div class="journal-map-footer"><div class="journal-map-actions">${routeLink(`/journal/${article.slug}`, t(copy.allNotes), 'button button-ocean')}${routeLink('/journal', t(words('Kelas & sertifikat', 'Courses & certificates')))}</div></div>
     </section>
     <section class="contact-section section" id="contact" data-formation="corridor">
       <div class="contact-copy bridge-copy">${heading(copy.contactFirst, copy.contactSecond)}<p>${t(copy.contactText)}</p>
@@ -244,8 +244,8 @@ function refreshChrome() {
   const touch = matchMedia('(hover: none)').matches;
   $('.menu-experience').innerHTML = `<button type="button" class="button button-ocean explore-launch" ${document.documentElement.dataset.scene === 'ready' ? '' : 'hidden'}><span lang="en">${interactionCopy.explore}</span><small>${t(interactionCopy.exploreDescription)}</small></button>`;
   $('.interaction-help').innerHTML = `<summary>${t(interactionCopy.help)}</summary><p>${t(interactionCopy.helpIntro)}</p><ul>
-    <li>${t(touch ? interactionCopy.mapNodesTouch : interactionCopy.mapNodes)}</li><li>${t(touch ? interactionCopy.mapRouteTouch : interactionCopy.mapRoute)}</li>
-    <li>${t(interactionCopy.mapNodesKeyboard)}</li><li>${t(interactionCopy.mapRouteKeyboard)}</li><li>${t(interactionCopy.projectPreview)}</li>
+    <li>${t(touch ? interactionCopy.mapNodesTouch : interactionCopy.mapNodes)}</li>
+    <li>${t(interactionCopy.mapNodesKeyboard)}</li><li>${t(interactionCopy.projectPreview)}</li>
     <li class="water-help">${t(touch ? interactionCopy.oceanTouch : interactionCopy.ocean)}</li></ul><button type="button" class="text-link replay-hints">${t(interactionCopy.replay)}</button>`;
   refreshMotion();
 }

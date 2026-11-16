@@ -3,7 +3,7 @@
 .journal-map-heading h2 { font-size: clamp(58px, 5.8vw, 92px); }
 .journal-map-heading h2 em { white-space: nowrap; }
 .journal-map-heading > p { max-width: 345px; color: #b4cbcf; line-height: 1.9; font-size: 14px; padding-bottom: 8px; }
-.learning-map { position: relative; width: 100%; height: clamp(560px, 49vw, 720px); margin-top: 28px; isolation: isolate; }
+.learning-map { position: relative; width: 100%; height: clamp(660px, 58vw, 800px); margin-top: 28px; isolation: isolate; }
 .learning-map::before { content: ''; position: absolute; inset: 3% -4%; z-index: -1; background: radial-gradient(ellipse, #082c37b3 20%, #06232c80 54%, transparent 75%); pointer-events: none; }
 .map-terrain, .map-route { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .map-contours { fill: none; stroke: #a4cec1; stroke-opacity: .24; stroke-width: 1; }
@@ -13,10 +13,9 @@
 .map-route path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
 .map-route-halo { stroke: #c7e6c5; stroke-width: 10; opacity: .05; }
 .map-route-line { stroke: #c4ddd1; stroke-width: 1.5; opacity: .68; }
-.map-route-selection { stroke: #e4f6d7; stroke-width: 2; stroke-dasharray: 0 100; opacity: 0; transition: stroke-dasharray .45s ease, opacity .2s; }
+/* Normalized dashes must scale with the path to end exactly at each stop. */
+.map-route .map-route-selection { vector-effect: none; stroke: #e4f6d7; stroke-width: 2; stroke-dasharray: 0 100; opacity: 0; transition: opacity .2s; }
 .has-active-stop .map-route-selection { opacity: .95; }
-.map-route-destination { fill: #bce4d31a; stroke: #e4f6d7; stroke-width: 1; opacity: 0; transition: opacity .2s; }
-.is-route-guiding .map-route-destination { opacity: .8; }
 .map-route-branch { stroke: #8eb7b8; stroke-width: 1; opacity: .34; stroke-dasharray: 3 8; }
 .map-fish-glow { fill: #b8e5cf; opacity: .08; }
 .map-route .map-fish-body { fill: #dfedda; stroke: #8faeab; stroke-width: .7; }
@@ -45,44 +44,37 @@
 .map-note-status { color: #b7ccbc; font-size: 11px; }
 .map-note h3 { font: 400 32px/1.1 var(--serif); margin: 12px 0; color: #e9efdf; }
 .map-note p { font-size: 13px; line-height: 1.8; color: #b8cdd2; }
-.journal-map-footer { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
-.journal-map-hint { color: #a6c0c4; font-size: 12px; line-height: 1.7; }
-.map-touch-hint { display: none; }
-.map-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; margin-top: 35px; }
-.map-topic-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.map-topic-controls > span { color: #a6c3c7; font-size: 12px; margin-right: 6px; }
-.map-topic-controls button { border: 1px solid #bcd5ce38; border-radius: 24px; padding: 11px 15px; font-size: 12px; background: #0c29364d; color: #b3cdce; transition: color .2s, background .2s; }
-.map-topic-controls button[aria-pressed=true] { color: #eff7e8; background: #8ebbae25; border-color: #c2dbcf8c; }
-.map-guide-next { background: #0b2c394d; padding: 12px 16px; border: 1px solid #bcd5ce38; border-radius: 5px; font-size: 12px; }
-.map-stop.is-unrelated:not(.is-active) .map-node { opacity: .45; }
-.map-stop.is-related .map-node-dot { box-shadow: 0 0 0 1px #d1e2ca, 0 0 20px #a6d2c355; }
+.journal-map-footer { display: flex; justify-content: flex-end; align-items: center; gap: 24px; }
 .map-node { transition: opacity .3s; }
 .map-node:focus-visible { opacity: 1 !important; }
+@media (max-width: 1100px) {
+  .map-node-name { font-size: 12px; max-width: 120px; }
+}
 @media (max-width: 1000px) {
   .journal-map-heading { gap: 30px; }
   .journal-map-heading h2 { font-size: 64px; }
   .journal-map-heading > p { max-width: 280px; font-size: 13px; }
-  .map-node-name { font-size: 12px; max-width: 130px; }
 }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .journal-preview.journal-map-section { padding-top: 70px; padding-bottom: 70px; }
   .journal-map-heading { display: block; }
   .journal-map-heading h2 { font-size: clamp(49px, 10vw, 68px); }
   .journal-map-heading h2 em { white-space: normal; }
   .journal-map-heading > p { margin-top: 24px; max-width: 380px; }
-  .learning-map { height: 900px; margin-top: 8px; }
+  .learning-map { height: calc(var(--journey-stop-count, 9) * 155px + 90px); margin-top: 8px; }
   .map-terrain { opacity: .65; }
   .map-route-desktop { display: none; }
   .map-route-mobile { display: block; }
+  .map-route .map-route-selection { stroke-width: 3; }
   .map-stop { top: var(--mobile-y); }
   .map-node { left: var(--mobile-x); }
   .map-node-name { left: 8px; transform: none; text-align: left; max-width: 140px; font-size: 13px; }
   .mobile-stop-right .map-node-name { left: auto; right: 8px; text-align: right; }
   .map-note, .note-below .map-note { left: 8px; width: calc(100% - 16px); max-width: 380px; top: auto; bottom: 38px; padding: 21px; }
-  .mobile-note-below .map-note { top: 90px; bottom: auto; }
+  .map-note::before, .note-below .map-note::before { top: auto; bottom: -18px; height: 18px; }
+  .mobile-note-below .map-note { top: 60px; bottom: auto; }
+  .mobile-note-below .map-note::before { top: -34px; bottom: auto; height: 34px; }
   .journal-map-footer { align-items: flex-start; flex-direction: column; gap: 22px; }
-  .map-mouse-hint { display: none; }
-  .map-touch-hint { display: inline; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .map-note:not([hidden]) { animation: map-note-in .16s ease-out; }
