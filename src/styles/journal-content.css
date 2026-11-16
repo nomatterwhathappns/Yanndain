@@ -1,0 +1,28 @@
+.journal-kind { display: block; font-size: 11px; color: #b9d2ca; line-height: 1.6; }
+.detail-heading .journal-kind { margin-bottom: 22px; }
+.journal-map-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 20px 28px; }
+.certificate-section { margin: 92px 0 48px; scroll-margin-top: 120px; }
+.certificate-section > h2 { font-size: clamp(40px, 4.6vw, 66px); line-height: 1.1; text-wrap: balance; }
+.certificate-intro { color: var(--muted); font-size: 14px; line-height: 1.9; max-width: 65ch; margin: 24px 0 34px; }
+.certificate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; list-style: none; margin: 0; padding: 0; }
+.certificate-card { min-width: 0; display: flex; flex-direction: column; padding: 28px; border: 1px solid #b9d6d12e; border-radius: 8px; background: #0a293697; }
+.certificate-issuer { color: #abc9cb; font-size: 12px; line-height: 1.7; }
+.certificate-card h3 { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 2.6vw, 36px); line-height: 1.15; margin: 14px 0 18px; overflow-wrap: anywhere; }
+.certificate-kind { color: #c5d9cc; font-size: 11px; line-height: 1.7; }
+.certificate-description { color: #b3c9cf; font-size: 13px; line-height: 1.85; margin-top: 12px; }
+.certificate-date, .certificate-validity { color: #9dbac1; font-size: 11px; line-height: 1.8; margin-top: 18px; }
+.certificate-validity { margin-top: 3px; }
+.certificate-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 26px; padding-top: 18px; margin-top: auto; }
+.certificate-actions .text-link { font-size: 12px; }
+.more-certificates { margin-top: 30px; }
+.more-certificates > summary { width: fit-content; color: #c8dfda; font-size: 13px; padding: 14px 18px; border: 1px solid #bfd8d141; border-radius: 4px; cursor: pointer; }
+.more-certificates > summary:hover, .more-certificates > summary:focus-visible { background: #b1d9cb14; }
+.more-certificates > summary > span { color: #9dbac1; margin-left: 6px; }
+.more-certificates > .certificate-grid { margin-top: 24px; }
+@media (max-width: 760px) {
+  .journal-map-actions { align-items: flex-start; flex-direction: column; gap: 18px; }
+  .certificate-section { margin-top: 64px; }
+  .certificate-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .certificate-card { padding: 23px; }
+  .certificate-intro { font-size: 13px; }
+}

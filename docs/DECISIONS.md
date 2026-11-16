@@ -80,7 +80,7 @@ Both follow native scroll: free swimming → gathering → formation. The curios
 
 CV links belong in Hero and About, open a PDF in a new tab, and follow the active language. One available CV may serve both languages. Links stay absent until a real PDF is provided.
 
-The profile uses the supplied full name, GitHub, and Instagram. Project descriptions are grounded in the user's four public repositories, with reviewed revisions in `PROJECT_SOURCES.md`. CV, portrait, and journal content remain pending real files or write-ups. The implementation does not invent work experience or achievements.
+The profile uses the supplied full name, GitHub, and Instagram. Project descriptions are grounded in the user's four public repositories, with reviewed revisions in `PROJECT_SOURCES.md`. CV and portrait remain pending real files. The journal uses the owner’s personal account and reviewed learning certificates. The implementation does not invent work experience or achievements.
 
 ## Delivery
 
@@ -105,6 +105,15 @@ All fish species, including manta and sharks, are scaled to 135% of their prior 
 
 ## Repository projects and contact links
 
-The four public repositories shown by the user replace all three example projects: StudyOS, CI/CD Pipeline Security Auditor, Recycle Bin Forensics and LinScope. Each has bilingual source-backed copy, a technology list, an always-visible GitHub link on Home, and a detail page with GitHub links. Project entries no longer carry preview labels. The existing ocean panel, inline disclosures, scroll restoration and open article layout remain. Reviewed README and implementation revisions are recorded in `PROJECT_SOURCES.md`; no hosted demos or measured outcomes are invented. Older decisions describing project placeholders are superseded by this section; journal previews remain.
+The four public repositories shown by the user replace all three example projects: StudyOS, CI/CD Pipeline Security Auditor, Recycle Bin Forensics and LinScope. Each has bilingual source-backed copy, a technology list, an always-visible GitHub link on Home, and a detail page with GitHub links. Project entries no longer carry preview labels. The existing ocean panel, inline disclosures, scroll restoration and open article layout remain. Reviewed README and implementation revisions are recorded in `PROJECT_SOURCES.md`; no hosted demos or measured outcomes are invented. Older decisions describing project placeholders are superseded by this section; the later personal-journey decision also replaces the journal previews.
 
 Contact links point to the user's confirmed GitHub account and supplied Instagram profile, opening in a new tab with `noopener noreferrer`. Each includes a decorative inline SVG logo. Social hover and keyboard focus use a blurred radial glow and eased underline instead of the rectangular text-link background; link hitboxes stay stationary, and reduced motion suppresses transitions and icon movement.
+
+
+## Personal learning journey and learning records
+
+Five real stages replace the generic map topics: college/fullstack interest in2023; choosing cybersecurity around July–August2024; the Coding Studio course (certificate issued17September2025, without inventing course dates); post-course THM/HTB practice; and ongoing learning toward becoming a Security Engineer. Stage filters group beginnings, practice and direction. Existing hover, touch, keyboard and fish-path interaction remain.
+
+The first actual bilingual article tells the owner’s account in six sections. Five completed THM rooms include Juice Shop once; three HTB machines are named; Unified and Vaccine remain unfinished; no PortSwigger completion or professional experience is invented. The owner’s continued willingness to explore cybersecurity is the concluding theme. Home links directly to the story and separately to the journal/certificate collection. The former sample article URL redirects to the real story.
+
+Eight PDFs supplied in the owner’s shared Drive folder support the certificate collection. Coding Studio, Dicoding web fundamentals, AWS Cloud Computing Essentials and HackerRank Java Basic are featured; four further AWS course-completion records use an accessible native disclosure. Cards retain actual issuer, printed date, record type and source links, including the printed Dicoding verification URL and validity date. AWS course completions and the preview experience are not described as professional AWS certifications. Certificate IDs are not repeated in card copy.

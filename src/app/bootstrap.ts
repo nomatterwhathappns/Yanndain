@@ -4,7 +4,9 @@ import '@fontsource/instrument-serif/latin-400-italic.css';
 import '../styles/main.css';
 import '../styles/featured-projects.css';
 import '../styles/project-detail.css';
+import '../styles/journal-content.css';
 import { article, copy, local, profile, projects, words, type Language, type Localized, type Project } from '../content';
+import { certificates, type Certificate } from '../content/certificates';
 import type { OceanControls, OceanState } from '../ocean/scene';
 import { learningMap, mountLearningMap } from '../journal/map';
 import { journalMapCopy } from '../content/journal-map';
@@ -92,7 +94,7 @@ function featuredProjectRow(project: Project, index: number) {
 function journalCard() {
   return `<a class="journal-card reveal" href="${href(`/journal/${article.slug}`)}" data-route="/journal/${article.slug}">
     <div class="journal-art" aria-hidden="true"><div class="journal-light"></div><div class="journal-water"></div></div>
-    <div class="journal-card-copy"><span class="preview-badge">${t(copy.preview)}</span><h3 lang="en">${escape(article.title)}</h3><p>${t(article.description)}</p></div>
+    <div class="journal-card-copy"><span class="journal-kind">${t(copy.journalKind)}</span><h3 lang="en">${escape(article.title)}</h3><p>${t(article.description)}</p></div>
   </a>`;
 }
 function footer() {
@@ -124,7 +126,7 @@ function home() {
     <section class="journal-preview journal-map-section section content-section" id="journal">
       <div class="journal-map-heading reveal">${heading(copy.journalFirst, copy.journalSecond)}<p>${t(journalMapCopy.intro)}</p></div>
       ${learningMap(language)}
-      <div class="journal-map-footer"><p class="journal-map-hint"><span class="map-mouse-hint">${t(journalMapCopy.hint)}</span><span class="map-touch-hint">${t(journalMapCopy.touchHint)}</span></p>${routeLink('/journal', t(copy.allNotes), 'button button-ocean')}</div>
+      <div class="journal-map-footer"><p class="journal-map-hint"><span class="map-mouse-hint">${t(journalMapCopy.hint)}</span><span class="map-touch-hint">${t(journalMapCopy.touchHint)}</span></p><div class="journal-map-actions">${routeLink(`/journal/${article.slug}`, t(copy.allNotes), 'button button-ocean')}${routeLink('/journal', t(words('Kelas & sertifikat', 'Courses & certificates')))}</div></div>
     </section>
     <section class="contact-section section" id="contact" data-formation="corridor">
       <div class="contact-copy bridge-copy">${heading(copy.contactFirst, copy.contactSecond)}<p>${t(copy.contactText)}</p>
@@ -158,8 +160,28 @@ function aboutPage() {
       <div class="actions">${cvLink()}${sectionLink('projects', t(copy.viewProjects), 'button button-ocean', null)}</div></div>
     </div>`);
 }
+function certificateDate(value: string) {
+  return new Intl.DateTimeFormat(language === 'id' ? 'id-ID' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
+}
+function certificateCard(certificate: Certificate) {
+  return `<li class="certificate-card" data-certificate="${escape(certificate.id)}">
+    <p class="certificate-issuer">${escape(certificate.issuer)}</p><h3>${escape(certificate.title)}</h3>
+    <p class="certificate-kind">${escape(t(certificate.kind))}</p><p class="certificate-description">${escape(t(certificate.description))}</p>
+    <p class="certificate-date">${escape(t(certificate.dateLabel))} <time datetime="${certificate.date}">${certificateDate(certificate.date)}</time></p>
+    ${certificate.validUntil ? `<p class="certificate-validity">${t(copy.validUntil)} <time datetime="${certificate.validUntil}">${certificateDate(certificate.validUntil)}</time></p>` : ''}
+    <div class="certificate-actions"><a class="text-link certificate-link" href="${escape(certificate.url)}" target="_blank" rel="noopener noreferrer" aria-label="${t(copy.viewCertificate)}: ${escape(certificate.title)}">${t(copy.viewCertificate)}</a>${certificate.verificationUrl ? `<a class="text-link certificate-verify" href="${escape(certificate.verificationUrl)}" target="_blank" rel="noopener noreferrer">${t(copy.verifyCertificate)}</a>` : ''}</div>
+  </li>`;
+}
+function certificateCollection() {
+  const featured = certificates.filter(certificate => certificate.featured);
+  const more = certificates.filter(certificate => !certificate.featured);
+  return `<section class="certificate-section" id="certificates" aria-labelledby="certificates-title"><h2 id="certificates-title" lang="en">Courses & certificates.</h2><p class="certificate-intro">${t(copy.certificatesIntro)}</p>
+    <ul class="certificate-grid">${featured.map(certificateCard).join('')}</ul>
+    ${more.length ? `<details class="more-certificates"><summary>${t(copy.moreCertificates)} <span>(${more.length})</span></summary><ul class="certificate-grid">${more.map(certificateCard).join('')}</ul></details>` : ''}
+  </section>`;
+}
 function journalPage() {
-  return pageShell(`<div class="page-heading">${heading(copy.journalFirst, copy.journalSecond, 'h1')}<p>${t(copy.articlePreviewNotice)}</p></div><div class="journal-list">${journalCard()}</div>`);
+  return pageShell(`<div class="page-heading">${heading(copy.journalFirst, copy.journalSecond, 'h1')}<p>${t(copy.journalIntro)}</p></div><div class="journal-list">${journalCard()}</div>${certificateCollection()}`);
 }
 function detailPage(kind: 'project' | 'article', slug: string) {
   const item = kind === 'project' ? projects.find(project => project.slug === slug) : slug === article.slug ? article : undefined;
@@ -180,8 +202,7 @@ function detailPage(kind: 'project' | 'article', slug: string) {
   }
   const parent = '/journal';
   return pageShell(`<article>
-    <div class="detail-heading"><span class="preview-badge">${t(copy.preview)}</span><h1 lang="en">${escape(item.title)}</h1><p>${t(item.description)}</p></div>
-    <div class="content-notice">${t(copy.previewNotice)}</div>
+    <div class="detail-heading"><span class="journal-kind">${t(copy.journalKind)}</span><h1 lang="en">${escape(item.title)}</h1><p>${t(item.description)}</p></div>
     <div class="article-layout"><aside class="table-of-contents"><h2 lang="en">${copy.contents}</h2>${item.sections.map((section, i) => `<a href="#part-${i}" data-jump="part-${i}">${escape(section.title)}</a>`).join('')}</aside>
     <div class="article-body">${item.sections.map((section, i) => `<section id="part-${i}"><h2 lang="en">${escape(section.title)}</h2><p>${t(section.description)}</p></section>`).join('')}</div></div>
     <div class="detail-bottom">${routeLink(parent, t(copy.nextArticle), 'button button-outline')}</div>
@@ -195,6 +216,7 @@ function parseLocation() {
   const match = pathname.match(/^\/(id|en)(\/.*)?$/);
   if (match) { language = match[1] as Language; route = match[2] || '/'; }
   else { route = pathname === '/' || pathname.endsWith('index.html') ? '/' : pathname; }
+  if (route === '/journal/first-page') { route = `/journal/${article.slug}`; writeLocation(href(route), true); }
   // Old project-index bookmarks now open the Home project collection.
   if (route === '/projects') { route = '/'; writeLocation(sectionHref('projects'), true); }
 }

@@ -161,6 +161,12 @@ test('map points explain their topics on hover and keyboard focus, with dismissi
   const notes = map.locator('.map-note');
   await expect(nodes).toHaveCount(5);
   await expect(notes).toHaveCount(5);
+  expect(await nodes.evaluateAll(elements => elements.map(element => element.getAttribute('data-map-node')))).toEqual([
+    'first-steps', 'choosing-cyber', 'learning-path', 'hands-on-labs', 'still-exploring',
+  ]);
+  expect(await notes.locator('h3').allTextContents()).toEqual([
+    'A first direction', 'Choosing cybersecurity', 'A learning path', 'Learning by doing', 'Still exploring',
+  ]);
 
   const first = nodes.first();
   const firstNote = await controlledNote(page, first);
@@ -194,22 +200,22 @@ test('map points explain their topics on hover and keyboard focus, with dismissi
 
 test('map descriptions localize while English point labels and journal navigation remain usable', async ({ page }) => {
   const nodes = page.locator('#journal button[data-map-node]');
-  const labels = await nodes.allTextContents();
+  const labels = await nodes.locator('[lang="en"]').allTextContents();
   await nodes.first().focus();
   const idNote = await controlledNote(page, nodes.first());
   const idText = await idNote.innerText();
 
   await page.getByRole('button', { name: 'EN', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  expect(await nodes.allTextContents()).toEqual(labels);
+  expect(await nodes.locator('[lang="en"]').allTextContents()).toEqual(labels);
   await nodes.first().focus();
   const enNote = await controlledNote(page, nodes.first());
   await expect(enNote).toBeVisible();
   expect(await enNote.innerText()).not.toBe(idText);
 
-  await page.locator('#journal').getByRole('link', { name: 'Enter the journal', exact: true }).click();
-  await expect(page).toHaveURL(/\/en\/journal$/);
-  await expect(page.locator('.journal-list')).toBeVisible();
+  await page.locator('#journal').getByRole('link', { name: 'Read my journey', exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/journal\/finding-my-way-into-security$/);
+  await expect(page.locator('.article-body')).toBeVisible();
 });
 
 for (const width of [390, 320]) {

@@ -55,7 +55,7 @@ vite.preview.config.ts      # Ekspor HTML lengkap
 
 Edit profil, kontak, dan isi umum website di `src/content/index.ts`. Empat proyek GitHub asli beserta deskripsi ID/EN, teknologi, dan tautan repo ada di `src/content/projects.ts`: StudyOS, CI/CD Pipeline Security Auditor, Recycle Bin Forensics, dan LinScope. Referensi kode serta revisi yang ditinjau dicatat di `docs/PROJECT_SOURCES.md`. GitHub dan Instagram tersedia di bagian Contact; CV dan kontak lain muncul setelah data asli diisi.
 
-Topik peta jurnal ada di `src/content/journal-map.ts`, dengan interaksi di `src/journal/map.ts` dan gaya di `src/styles/journal-map.css`. Jurnal masih memakai konten preview.
+Tahap perjalanan pribadi ada di `src/content/journal-map.ts`, cerita lengkap ID/EN di `src/content/journey.ts`, dan delapan sertifikat asli di `src/content/certificates.ts`. Referensi dokumen tercatat di `docs/CERTIFICATE_SOURCES.md`. Empat sertifikat utama langsung tampil; empat lainnya tersedia melalui disclosure. Interaksi peta tetap berada di `src/journal/map.ts`, dengan gaya peta dan halaman jurnal di `src/styles/journal-map.css` dan `src/styles/journal-content.css`.
 
 ## Build
 

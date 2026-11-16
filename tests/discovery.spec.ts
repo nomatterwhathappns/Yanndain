@@ -120,7 +120,7 @@ test('project peeks keep direct links and restore the expanded item and collecti
 
 test('topic emphasis, keyboard guidance and bilingual help work without WebGL or animation', async ({ page }) => {
   await withoutGPU(page);
-  await page.locator('[data-map-filter="defensive"]').click();
+  await page.locator('[data-map-filter="practice"]').click();
   await expect(page.locator('.map-stop.is-related')).toHaveCount(3);
   await expect(page.locator('.map-stop.is-unrelated')).toHaveCount(2);
   await page.locator('[data-map-filter="all"]').click();

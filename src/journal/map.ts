@@ -1,5 +1,5 @@
 import { local, type Language } from '../content';
-import { journalMapCopy, journalStops } from '../content/journal-map';
+import { journalFilters, journalMapCopy, journalStops } from '../content/journal-map';
 import { mountRouteTraveler } from './route-motion';
 import { interactionCopy, discoverFeature } from '../content/interactions';
 import '../styles/journal-map.css';
@@ -30,7 +30,7 @@ function routeChart(mobile: boolean) {
 export function learningMap(language: Language) {
   const t = (value: Parameters<typeof local>[0]) => escape(local(value, language));
   return `<div class="map-toolbar">
-    <div class="map-topic-controls" role="group" aria-label="${t(interactionCopy.mapTopics)}"><span>${t(interactionCopy.mapTopics)}</span>${[['all', 'All topics'], ['foundations', 'Foundations'], ['offensive', 'Offensive'], ['defensive', 'Defensive']].map(([id, name]) => `<button type="button" data-map-filter="${id}" aria-pressed="${id === 'all'}" lang="en">${name}</button>`).join('')}</div>
+    <div class="map-topic-controls" role="group" aria-label="${t(interactionCopy.mapTopics)}"><span>${t(interactionCopy.mapTopics)}</span>${journalFilters.map(({ id, label }) => `<button type="button" data-map-filter="${id}" aria-pressed="${id === 'all'}">${t(label)}</button>`).join('')}</div>
     <button type="button" class="map-guide-next text-link">${t(interactionCopy.mapGuide)}</button>
     </div><div class="learning-map" role="group" aria-label="${t(journalMapCopy.label)}">
     <svg class="map-terrain" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
@@ -58,8 +58,8 @@ export function learningMap(language: Language) {
     </svg>
     ${routeChart(false)}${routeChart(true)}
     <ol class="map-stops">${journalStops.map((stop, i) => `<li class="map-stop${i === 1 || i === 3 ? ' note-below' : ''}${i === 0 ? ' mobile-note-below' : ''}${stop.mobileX > 50 ? ' mobile-stop-right' : ''}" style="--stop-x:${stop.x}%;--stop-y:${stop.y}%;--mobile-x:${stop.mobileX}%;--mobile-y:${stop.mobileY}%">
-      <button type="button" class="map-node" data-map-node="${stop.id}" aria-expanded="false" aria-controls="map-note-${stop.id}"><span class="map-node-dot" aria-hidden="true"></span><span class="map-node-name" lang="en">${escape(stop.title)}</span></button>
-      <div class="map-note" id="map-note-${stop.id}" role="region" aria-labelledby="map-title-${stop.id}" hidden><button type="button" class="map-note-close" aria-label="${t(journalMapCopy.close)}"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" stroke-width="1.2"/></svg></button><span class="map-note-status">${t(journalMapCopy.preview)}</span><h3 id="map-title-${stop.id}" lang="en">${escape(stop.title)}</h3><p>${t(stop.description)}</p></div>
+      <button type="button" class="map-node" data-map-node="${stop.id}" aria-expanded="false" aria-controls="map-note-${stop.id}"><span class="map-node-dot" aria-hidden="true"></span><span class="map-node-name"><span class="map-node-period">${t(stop.period)}</span><span lang="en">${escape(stop.title)}</span></span></button>
+      <div class="map-note" id="map-note-${stop.id}" role="region" aria-labelledby="map-title-${stop.id}" hidden><button type="button" class="map-note-close" aria-label="${t(journalMapCopy.close)}"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" stroke="currentColor" stroke-width="1.2"/></svg></button><span class="map-note-status">${t(stop.period)}</span><h3 id="map-title-${stop.id}" lang="en">${escape(stop.title)}</h3><p>${t(stop.description)}</p></div>
     </li>`).join('')}</ol>
   </div>`;
 }
@@ -141,18 +141,14 @@ export function mountLearningMap(root: HTMLElement | null) {
   toolbar.querySelector('.map-guide-next')!.addEventListener('click', () => {
     show(null); traveler.guideNext(); discoverFeature('map-route');
   }, { signal });
-  const topicGroups: Record<string, string[]> = {
-    foundations: ['foundations', 'field-notes'],
-    offensive: ['offensive-labs', 'new-directions'],
-    defensive: ['new-directions', 'defensive-practice', 'field-notes'],
-  };
+  const groupsByStop = new Map(journalStops.map(stop => [stop.id, stop.groups]));
   for (const button of toolbar.querySelectorAll<HTMLButtonElement>('[data-map-filter]')) {
     button.addEventListener('click', () => {
       show(null);
       const category = button.dataset.mapFilter!;
       toolbar.querySelectorAll<HTMLButtonElement>('[data-map-filter]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
       for (const node of buttons) {
-        const related = category === 'all' || topicGroups[category].includes(node.dataset.mapNode!);
+        const related = category === 'all' || (groupsByStop.get(node.dataset.mapNode!)?.includes(category) ?? false);
         node.closest('.map-stop')!.classList.toggle('is-unrelated', !related);
         node.closest('.map-stop')!.classList.toggle('is-related', category !== 'all' && related);
       }
